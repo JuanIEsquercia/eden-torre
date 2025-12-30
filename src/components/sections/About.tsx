@@ -23,7 +23,7 @@ function About() {
           <div className="col-md-6">
             <div className="rounded overflow-hidden shadow-sm bg-light">
               <img 
-                src="/images/frente torre.svg" 
+                src="/images/frente torre.png" 
                 alt="Frente de la torre Eden" 
                 className="img-fluid w-100"
                 style={{ objectFit: 'contain', display: 'block' }}
