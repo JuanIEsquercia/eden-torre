@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS units (
   tipologia TEXT NOT NULL CHECK (tipologia IN ('monoambiente', '1-dormitorio', '2-dormitorios', '3-dormitorios', 'penthouse')),
   subtipo TEXT,
   superficie_total NUMERIC NOT NULL,
-  orientacion TEXT NOT NULL CHECK (orientacion IN ('frente', 'contrafrente')),
+  orientacion TEXT NOT NULL CHECK (orientacion IN ('frente', 'contrafrente', 'interno')),
   disponibilidad TEXT NOT NULL CHECK (disponibilidad IN ('disponible', 'reservado', 'vendido')),
   valor_m2 NUMERIC NOT NULL,
   precio_contado NUMERIC NOT NULL,

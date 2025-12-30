@@ -2,7 +2,7 @@ export type UnitDisponibilidad = 'disponible' | 'reservado' | 'vendido'
 
 export type UnitTypology = 'monoambiente' | '1-dormitorio' | '2-dormitorios' | '3-dormitorios' | 'penthouse'
 
-export type UnitOrientacion = 'frente' | 'contrafrente'
+export type UnitOrientacion = 'frente' | 'contrafrente' | 'interno'
 
 export interface Unit {
   id: string

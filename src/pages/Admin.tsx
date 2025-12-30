@@ -630,6 +630,7 @@ function Admin() {
                     >
                       <option value="frente">Frente</option>
                       <option value="contrafrente">Contrafrente</option>
+                      <option value="interno">Interno</option>
                     </select>
                   </div>
                   <div className="col-md-6">

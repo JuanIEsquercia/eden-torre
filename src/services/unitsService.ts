@@ -10,7 +10,7 @@ export interface UnitDB {
   tipologia: UnitTypology
   subtipo?: string
   superficie_total: number
-  orientacion: 'frente' | 'contrafrente'
+  orientacion: 'frente' | 'contrafrente' | 'interno'
   disponibilidad: UnitDisponibilidad
   valor_m2: number
   precio_contado: number
