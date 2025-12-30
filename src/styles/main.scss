@@ -1,0 +1,87 @@
+// ============================================
+// VARIABLES DE MARCA - EDEN
+// ============================================
+// Definir variables ANTES de importar Bootstrap
+// para que las sobrescriba
+
+// COLORES DE MARCA
+$primary: #EA580C;        // Naranja Ladrillo (Botones, Links activos)
+$secondary: #334155;     // Gris Plomo (Texto suave, fondos oscuros)
+$dark: #1E293B;          // Casi negro (Navbar, Footers)
+$light: #F8FAFC;         // Blanco Hueso (Fondo general)
+
+// COLORES DEL SISTEMA
+$body-bg: $light;
+$body-color: $secondary;
+
+// TIPOGRAFÍA
+$font-family-base: 'Lato', sans-serif;
+$headings-font-family: 'Barlow', sans-serif;
+$headings-font-weight: 700;
+
+// ESTILOS GLOBALES
+$border-radius: 0.25rem;  // Bordes sutiles, no muy redondos
+$btn-font-weight: 700;
+
+// ============================================
+// IMPORTAR BOOTSTRAP
+// ============================================
+// Importar Bootstrap después de definir las variables
+// para que use nuestros valores personalizados
+
+@import 'bootstrap/scss/bootstrap';
+
+// ============================================
+// ESTILOS PERSONALIZADOS ADICIONALES
+// ============================================
+
+// Variables CSS personalizadas para uso en componentes
+:root {
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --dark: #{$dark};
+  --light: #{$light};
+  --background: #{$light};
+  --surface: #FFFFFF;
+  --accent: #64748B;
+}
+
+// Utilidades personalizadas
+.bg-primary-custom {
+  background-color: var(--primary) !important;
+}
+
+.bg-secondary-custom {
+  background-color: var(--secondary) !important;
+}
+
+.bg-background {
+  background-color: var(--background) !important;
+}
+
+.bg-surface {
+  background-color: var(--surface) !important;
+}
+
+.text-primary-custom {
+  color: var(--primary) !important;
+}
+
+.text-secondary-custom {
+  color: var(--secondary) !important;
+}
+
+// Animación sutil para el hero (opcional)
+@keyframes subtle-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-section {
+  animation: subtle-shift 20s ease-in-out infinite;
+}
+
