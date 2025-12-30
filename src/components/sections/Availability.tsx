@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Unit, UnitDisponibilidad, UnitTypology } from '../types/unit'
+import { Unit, UnitDisponibilidad, UnitTypology } from '../../types/unit'
 import { getFilteredUnits } from '../../services/unitsService'
 
 function Availability() {
@@ -32,8 +32,8 @@ function Availability() {
     }
   }
 
-  const getDisponibilidadBadge = (disponibilidad: UnitDisponibilidad) => {
-    const badges = {
+  const getDisponibilidadBadge = (disponibilidad: UnitDisponibilidad): string => {
+    const badges: Record<UnitDisponibilidad, string> = {
       disponible: 'bg-success',
       reservado: 'bg-warning',
       vendido: 'bg-secondary',
@@ -41,8 +41,8 @@ function Availability() {
     return badges[disponibilidad] || 'bg-secondary'
   }
 
-  const getDisponibilidadLabel = (disponibilidad: UnitDisponibilidad) => {
-    const labels = {
+  const getDisponibilidadLabel = (disponibilidad: UnitDisponibilidad): string => {
+    const labels: Record<UnitDisponibilidad, string> = {
       disponible: 'Disponible',
       reservado: 'Reservado',
       vendido: 'Vendido',

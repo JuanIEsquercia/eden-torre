@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Unit, UnitDisponibilidad, UnitTypology, UnitOrientacion } from '../types/unit'
-import { getAllUnits, createUnit, updateUnit, deleteUnit } from '../services/unitsService'
+import { getAllUnits, createUnit } from '../services/unitsService'
 
 function Admin() {
   const [units, setUnits] = useState<Unit[]>([])
@@ -725,7 +725,7 @@ function Admin() {
                           <input
                             type="number"
                             className="form-control"
-                            value={newUnit.cuotas?.[cuota as keyof typeof newUnit.cuotas] || ''}
+                            value={newUnit.cuotas?.[cuota.toString() as '12' | '24' | '36' | '48' | '60' | '72'] || ''}
                             readOnly
                             style={{ backgroundColor: '#f8f9fa' }}
                           />
