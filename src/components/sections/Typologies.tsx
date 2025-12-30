@@ -2,6 +2,14 @@ import { useState } from 'react'
 
 type Typology = 'monoambiente' | '1-dormitorio' | '2-dormitorios'
 
+// Mapeo de tipologías a nombres de archivos de planos
+// Si cambias las tipologías, solo actualiza este objeto
+const typologyPlans: Record<Typology, string> = {
+  'monoambiente': 'monoambiente.png',
+  '1-dormitorio': '1-dormitorio.png',
+  '2-dormitorios': '2-dormitorios.png',
+}
+
 function Typologies() {
   const [activeTab, setActiveTab] = useState<Typology>('monoambiente')
 
@@ -26,6 +34,12 @@ function Typologies() {
       description: 'Espacios perfectos para familias pequeñas',
     },
   ]
+
+  // Función para obtener la ruta del plano según la tipología
+  const getPlanImage = (typology: Typology): string => {
+    const fileName = typologyPlans[typology]
+    return `/planos/${fileName}`
+  }
 
   return (
     <section className="py-5 bg-surface">
@@ -93,15 +107,44 @@ function Typologies() {
                 {/* Área de plano/render mejorada */}
                 <div className="bg-white rounded border shadow-sm overflow-hidden">
                   <div 
-                    className="d-flex align-items-center justify-content-center position-relative"
+                    className="d-flex align-items-center justify-content-center position-relative bg-light"
                     style={{ 
                       aspectRatio: '16/9', 
-                      minHeight: '500px',
-                      background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+                      minHeight: '500px'
                     }}
                   >
-                    {/* Placeholder mejorado */}
-                    <div className="text-center p-5">
+                    {/* Intentar cargar la imagen del plano */}
+                    <img 
+                      src={getPlanImage(typology.key)}
+                      alt={`Plano de ${typology.label}`}
+                      className="img-fluid"
+                      style={{ 
+                        objectFit: 'contain',
+                        maxWidth: '100%',
+                        maxHeight: '100%'
+                      }}
+                      onError={(e) => {
+                        // Si la imagen no existe, mostrar placeholder
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const placeholder = target.nextElementSibling as HTMLElement
+                        if (placeholder) {
+                          placeholder.style.display = 'block'
+                        }
+                      }}
+                    />
+                    {/* Placeholder que se muestra si no hay imagen */}
+                    <div 
+                      className="text-center p-5 position-absolute"
+                      style={{ 
+                        display: 'none',
+                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                        width: '100%',
+                        height: '100%',
+                        top: 0,
+                        left: 0
+                      }}
+                    >
                       <div className="mb-4">
                         <svg 
                           width="100" 
@@ -121,6 +164,7 @@ function Typologies() {
                       </div>
                       <h4 className="h5 fw-bold text-secondary-custom mb-2">Plano de {typology.label}</h4>
                       <p className="text-muted mb-0">Render o plano arquitectónico</p>
+                      <p className="text-muted small mt-2">Carga el archivo: {typologyPlans[typology.key]}</p>
                     </div>
                   </div>
                 </div>
