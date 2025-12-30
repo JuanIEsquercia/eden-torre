@@ -5,6 +5,8 @@ import { getFilteredUnits } from '../../services/unitsService'
 function Availability() {
   const [units, setUnits] = useState<Unit[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null)
+  const [showModal, setShowModal] = useState(false)
   const [filters, setFilters] = useState({
     disponibilidad: '',
     typology: '',
@@ -65,6 +67,16 @@ function Availability() {
     return null
   }
 
+  const handleCardClick = (unit: Unit) => {
+    setSelectedUnit(unit)
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setSelectedUnit(null)
+  }
+
   if (loading) {
     return (
       <section className="py-5 bg-background">
@@ -119,7 +131,11 @@ function Availability() {
           <div className="row g-4">
             {units.map((unit) => (
               <div key={unit.id} className="col-md-6 col-lg-4">
-                <div className="card h-100 shadow-sm">
+                <div 
+                  className="card h-100 shadow-sm"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleCardClick(unit)}
+                >
                   <div className="position-relative">
                     <div className="position-absolute top-0 end-0 m-2" style={{ zIndex: 10 }}>
                       <span className={`badge ${getDisponibilidadBadge(unit.disponibilidad)}`}>
@@ -160,6 +176,174 @@ function Availability() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Modal de Detalle de Unidad */}
+        {showModal && selectedUnit && (
+          <div
+            className="modal show d-block"
+            tabIndex={-1}
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={handleCloseModal}
+          >
+            <div
+              className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h2 className="modal-title h4 fw-bold">Unidad {selectedUnit.unidad}</h2>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseModal}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="row g-4">
+                    {/* Información básica */}
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">PISO</p>
+                        <p className="fw-semibold mb-0">{selectedUnit.piso}</p>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">DPTO</p>
+                        <p className="fw-semibold mb-0">{selectedUnit.depto}</p>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">SUPERFICIE TOTAL M²</p>
+                        <p className="fw-semibold mb-0">{selectedUnit.superficieTotal} m²</p>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">TIPOLOGÍA</p>
+                        <p className="fw-semibold mb-0">
+                          {selectedUnit.tipologia.replace('-', ' ')}
+                          {selectedUnit.subtipo && (
+                            <span className="text-muted small"> ({selectedUnit.subtipo})</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">ORIENTACIÓN</p>
+                        <p className="fw-semibold mb-0">{selectedUnit.orientacion || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">DISPONIBILIDAD</p>
+                        <span className={`badge ${getDisponibilidadBadge(selectedUnit.disponibilidad)}`}>
+                          {getDisponibilidadLabel(selectedUnit.disponibilidad)}
+                        </span>
+                      </div>
+                      <div className="mb-3">
+                        <p className="text-muted small mb-1">VALOR M²</p>
+                        <p className="fw-semibold mb-0">${selectedUnit.valorM2.toLocaleString()} /m²</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  {/* Precios */}
+                  <div className="row g-4 mb-4">
+                    <div className="col-md-6">
+                      <div className="card bg-light">
+                        <div className="card-body">
+                          <p className="text-muted small mb-2">PRECIO CONTADO (USD)</p>
+                          <p className="h4 fw-bold text-primary mb-0">
+                            ${selectedUnit.precioContado.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="card bg-light">
+                        <div className="card-body">
+                          <p className="text-muted small mb-2">PRECIO FINANCIADO (USD)</p>
+                          <p className="h4 fw-bold text-primary mb-0">
+                            ${selectedUnit.precioFinanciado.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Entrega y Saldo */}
+                  <div className="row g-4 mb-4">
+                    <div className="col-md-4">
+                      <div className="card">
+                        <div className="card-body text-center">
+                          <p className="text-muted small mb-2">% DE ENTREGA</p>
+                          <p className="h5 fw-bold mb-0">{selectedUnit.porcentajeEntrega}%</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="card">
+                        <div className="card-body text-center">
+                          <p className="text-muted small mb-2">ENTREGA (USD)</p>
+                          <p className="h5 fw-bold mb-0">${selectedUnit.entrega.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="card">
+                        <div className="card-body text-center">
+                          <p className="text-muted small mb-2">SALDO (USD)</p>
+                          <p className="h5 fw-bold mb-0">${selectedUnit.saldo.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cuotas */}
+                  {selectedUnit.cuotas && (
+                    <>
+                      <h5 className="fw-bold mb-3">Plan de Financiamiento</h5>
+                      <div className="row g-3">
+                        {Object.entries(selectedUnit.cuotas).map(([cuotas, monto]) => (
+                          <div key={cuotas} className="col-md-4 col-sm-6">
+                            <div className="card border">
+                              <div className="card-body text-center p-3">
+                                <p className="text-muted small mb-1">{cuotas} cuotas</p>
+                                <p className="h6 fw-bold mb-0">${monto.toLocaleString()}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Imagen del plano si existe */}
+                  {getPlanoImage(selectedUnit) && (
+                    <div className="mt-4">
+                      <h5 className="fw-bold mb-3">Plano</h5>
+                      <div className="bg-light rounded p-3">
+                        <img
+                          src={getPlanoImage(selectedUnit)!}
+                          alt={`Plano ${selectedUnit.unidad}`}
+                          className="img-fluid w-100"
+                          style={{ maxHeight: '400px', objectFit: 'contain' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCloseModal}
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
