@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type Typology = 'monoambiente' | '1-dormitorio' | '2-dormitorios'
 
@@ -227,69 +227,7 @@ function Typologies() {
                 </div>
                 
                 {/* Área de plano/render mejorada */}
-                <div className="bg-white rounded border shadow-sm overflow-hidden">
-                  <div 
-                    className="d-flex align-items-center justify-content-center position-relative bg-light"
-                    style={{ 
-                      aspectRatio: '16/9', 
-                      minHeight: '500px'
-                    }}
-                  >
-                    {/* Intentar cargar la imagen del plano */}
-                    <img 
-                      src={getPlanImage(typology.key)}
-                      alt={`Plano de ${typology.label}`}
-                      className="img-fluid"
-                      style={{ 
-                        objectFit: 'contain',
-                        maxWidth: '100%',
-                        maxHeight: '100%'
-                      }}
-                      onError={(e) => {
-                        // Si la imagen no existe, mostrar placeholder
-                        const target = e.target as HTMLImageElement
-                        target.style.display = 'none'
-                        const placeholder = target.nextElementSibling as HTMLElement
-                        if (placeholder) {
-                          placeholder.style.display = 'block'
-                        }
-                      }}
-                    />
-                    {/* Placeholder que se muestra si no hay imagen */}
-                    <div 
-                      className="text-center p-5 position-absolute"
-                      style={{ 
-                        display: 'none',
-                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-                        width: '100%',
-                        height: '100%',
-                        top: 0,
-                        left: 0
-                      }}
-                    >
-                      <div className="mb-4">
-                        <svg 
-                          width="100" 
-                          height="100" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="1.5"
-                          className="text-muted"
-                        >
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                          <line x1="16" y1="13" x2="8" y2="13" />
-                          <line x1="16" y1="17" x2="8" y2="17" />
-                          <polyline points="10 9 9 9 8 9" />
-                        </svg>
-                      </div>
-                      <h4 className="h5 fw-bold text-secondary-custom mb-2">Plano de {typology.label}</h4>
-                      <p className="text-muted mb-0">Render o plano arquitectónico</p>
-                      <p className="text-muted small mt-2">Carga el archivo: {typologyPlans[typology.key]}</p>
-                    </div>
-                  </div>
-                </div>
+                <PlanImageLoader typology={typology.key} label={typology.label} />
               </div>
             ))}
         </div>
