@@ -21,19 +21,12 @@ function About() {
             </p>
           </div>
           <div className="col-md-6">
-            <div className="rounded overflow-hidden shadow-sm bg-light d-flex align-items-center justify-content-center" style={{ minHeight: '300px', maxHeight: '600px' }}>
+            <div className="rounded overflow-hidden shadow-sm bg-light">
               <img 
                 src="/images/frente%20torre.png" 
                 alt="Frente de la torre Eden" 
-                className="img-fluid"
-                style={{ 
-                  objectFit: 'contain', 
-                  display: 'block',
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  width: 'auto',
-                  height: 'auto'
-                }}
+                className="img-fluid w-100"
+                style={{ objectFit: 'contain', display: 'block' }}
               />
             </div>
           </div>
