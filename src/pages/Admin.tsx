@@ -836,6 +836,34 @@ function Admin() {
           </div>
         </div>
       )}
+
+      {/* Sección de Materiales para Colegas */}
+      <div id="materiales" className="mt-5 pt-5 border-top">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="h3 fw-bold mb-0">Materiales para Colegas</h2>
+          <button 
+            className="btn btn-primary"
+            onClick={() => {
+              // TODO: Implementar modal para agregar material
+              alert('Funcionalidad de agregar material próximamente')
+            }}
+          >
+            + Agregar Material
+          </button>
+        </div>
+        
+        <div className="card">
+          <div className="card-body">
+            <p className="text-muted mb-0">
+              Aquí podrás gestionar los archivos y materiales que estarán disponibles
+              para los colegas en la sección "Área de Colegas" de la página pública.
+            </p>
+            <p className="text-muted small mt-2 mb-0">
+              <strong>Próximamente:</strong> Podrás subir PDFs, imágenes, documentos y más.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
