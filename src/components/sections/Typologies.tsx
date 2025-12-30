@@ -36,27 +36,27 @@ function Typologies() {
 
         {/* Información del proyecto */}
         <div className="row mb-5">
-          <div className="col-md-8 mx-auto">
+          <div className="col-md-10 mx-auto">
             <div className="card border-0 shadow-sm">
-              <div className="card-body p-4">
+              <div className="card-body p-5">
                 <div className="row g-4 text-center">
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                     <h4 className="h5 fw-bold text-primary mb-2">Superficie Total</h4>
-                    <p className="fs-4 fw-semibold text-secondary-custom mb-0">3,200 m²</p>
+                    <p className="fs-3 fw-bold text-secondary-custom mb-0">3,200 m²</p>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                     <h4 className="h5 fw-bold text-primary mb-2">Torre Residencial</h4>
-                    <p className="fs-4 fw-semibold text-secondary-custom mb-0">9 Pisos</p>
+                    <p className="fs-3 fw-bold text-secondary-custom mb-0">9 Pisos</p>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                     <h4 className="h5 fw-bold text-primary mb-2">Cocheras</h4>
-                    <p className="fs-4 fw-semibold text-secondary-custom mb-0">2 Niveles</p>
+                    <p className="fs-3 fw-bold text-secondary-custom mb-0">2 Niveles</p>
+                  </div>
+                  <div className="col-md-3">
+                    <h4 className="h5 fw-bold text-primary mb-2">Terreno</h4>
+                    <p className="fs-6 fw-semibold text-secondary-custom mb-0">Perímetro entre medianeras<br />10x47m</p>
                   </div>
                 </div>
-                <hr className="my-4" />
-                <p className="text-center text-secondary-custom mb-0">
-                  <strong>Terreno:</strong> Perímetro entre medianeras de 10x47m
-                </p>
               </div>
             </div>
           </div>
@@ -96,16 +96,16 @@ function Typologies() {
                     className="d-flex align-items-center justify-content-center position-relative"
                     style={{ 
                       aspectRatio: '16/9', 
-                      minHeight: '450px',
+                      minHeight: '500px',
                       background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
                     }}
                   >
                     {/* Placeholder mejorado */}
-                    <div className="text-center p-4">
-                      <div className="mb-3">
+                    <div className="text-center p-5">
+                      <div className="mb-4">
                         <svg 
-                          width="80" 
-                          height="80" 
+                          width="100" 
+                          height="100" 
                           viewBox="0 0 24 24" 
                           fill="none" 
                           stroke="currentColor" 
@@ -119,8 +119,8 @@ function Typologies() {
                           <polyline points="10 9 9 9 8 9" />
                         </svg>
                       </div>
-                      <p className="text-muted fw-semibold mb-1">Plano de {typology.label}</p>
-                      <p className="text-muted small mb-0">Render o plano arquitectónico</p>
+                      <h4 className="h5 fw-bold text-secondary-custom mb-2">Plano de {typology.label}</h4>
+                      <p className="text-muted mb-0">Render o plano arquitectónico</p>
                     </div>
                   </div>
                 </div>
