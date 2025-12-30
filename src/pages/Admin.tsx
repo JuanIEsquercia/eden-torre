@@ -314,12 +314,23 @@ function Admin() {
     <div className="container py-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h2 fw-bold mb-0">Panel de Administración</h1>
-        <button 
-          className="btn btn-primary"
-          onClick={handleOpenCreateModal}
-        >
-          + Nueva Unidad
-        </button>
+        <div className="d-flex gap-2">
+          <button 
+            className="btn btn-outline-primary"
+            onClick={() => {
+              // TODO: Implementar navegación a sección de materiales
+              window.location.hash = 'materiales'
+            }}
+          >
+            📦 Materiales para Colegas
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={handleOpenCreateModal}
+          >
+            + Nueva Unidad
+          </button>
+        </div>
       </div>
       
       {/* Grid de cards */}
