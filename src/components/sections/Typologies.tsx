@@ -11,9 +11,6 @@ const typologyPlans: Record<Typology, string | string[]> = {
   '2-dormitorios': ['2-dormitorios.png', '2-dormitorios.jpg', '2-dormitorios.jpeg', '2-dormitorios.svg', '2-dormitorios.webp'],
 }
 
-// Extensiones soportadas (en orden de prioridad)
-const supportedExtensions = ['.png', '.jpg', '.jpeg', '.svg', '.webp', '.gif']
-
 function Typologies() {
   const [activeTab, setActiveTab] = useState<Typology>('monoambiente')
 
@@ -38,24 +35,6 @@ function Typologies() {
       description: 'Espacios perfectos para familias pequeñas',
     },
   ]
-
-  // Función para obtener la ruta del plano según la tipología
-  // Intenta cargar el archivo con diferentes extensiones si no se especifica
-  const getPlanImage = (typology: Typology): string | null => {
-    const planConfig = typologyPlans[typology]
-    
-    // Si es un string (archivo específico), usarlo directamente
-    if (typeof planConfig === 'string') {
-      return `/planos/${planConfig}`
-    }
-    
-    // Si es un array, usar el primero (el sistema intentará cargarlo)
-    if (Array.isArray(planConfig) && planConfig.length > 0) {
-      return `/planos/${planConfig[0]}`
-    }
-    
-    return null
-  }
 
   // Función para obtener todas las posibles rutas de un plano (para fallback)
   const getPlanImageOptions = (typology: Typology): string[] => {
@@ -134,8 +113,10 @@ function Typologies() {
                   <li key={idx}>• {file.replace('/planos/', '')}</li>
                 ))}
               </ul>
-      </div>
-    )
+            </div>
+          </div>
+        </div>
+      )
     }
 
     return (
