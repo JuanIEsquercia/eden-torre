@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 
 type Typology = 'monoambiente' | '1-dormitorio' | '2-dormitorios'
 
+// Componente de Tipologías - Muestra los diferentes tipos de unidades disponibles
+
 // Mapeo de tipologías a nombres de archivos de planos
 // Puedes usar cualquier extensión: .png, .jpg, .jpeg, .svg, .webp, etc.
 // Si no especificas extensión, el sistema intentará encontrarla automáticamente
