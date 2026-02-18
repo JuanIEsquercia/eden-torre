@@ -1,7 +1,6 @@
 'use server'
 
-import { db } from '@/lib/firebase'
-import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore'
+import { db } from '@/lib/firebase-admin'
 import { revalidatePath } from 'next/cache'
 
 export interface FileFile {
@@ -9,14 +8,14 @@ export interface FileFile {
     name: string
     url: string
     type: string
-    uploadedAt: any
+    uploadedAt: string // ISO string for client
 }
 
 const COLLECTION_NAME = 'files'
 
 export async function saveFileMetadata(name: string, url: string, type: string) {
     try {
-        await addDoc(collection(db, COLLECTION_NAME), {
+        await db.collection(COLLECTION_NAME).add({
             name,
             url,
             type,
@@ -32,22 +31,27 @@ export async function saveFileMetadata(name: string, url: string, type: string) 
 
 export async function getFiles(): Promise<FileFile[]> {
     try {
-        const q = query(collection(db, COLLECTION_NAME), orderBy('uploadedAt', 'desc'))
-        const querySnapshot = await getDocs(q)
-        return querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            // Serialize date for client
-            uploadedAt: doc.data().uploadedAt?.toDate().toISOString()
-        })) as FileFile[]
+        const snapshot = await db.collection(COLLECTION_NAME).orderBy('uploadedAt', 'desc').get()
+        return snapshot.docs.map(doc => {
+            const data = doc.data()
+            return {
+                id: doc.id,
+                name: data.name,
+                url: data.url,
+                type: data.type,
+                // Serialize date safely
+                uploadedAt: data.uploadedAt?.toDate?.()?.toISOString() || new Date().toISOString()
+            }
+        }) as FileFile[]
     } catch (error) {
+        console.error("Error fetching files:", error)
         return []
     }
 }
 
 export async function deleteFileMetadata(id: string) {
     try {
-        await deleteDoc(doc(db, COLLECTION_NAME, id))
+        await db.collection(COLLECTION_NAME).doc(id).delete()
         revalidatePath('/admin/files')
         return { success: true }
     } catch (error) {

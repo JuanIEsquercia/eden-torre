@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { Ruler, BedDouble, Calendar, ArrowLeft, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { PropertyGallery } from '@/components/public/PropertyGallery'
+import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 
 export const dynamic = 'force-dynamic'
 
@@ -80,6 +81,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                 </h1>
                             </div>
 
+
+
                             {/* Conversion Card */}
                             <div className="rounded-2xl bg-slate-900 p-8 shadow-2xl ring-1 ring-white/10">
                                 <h3 className="text-base font-semibold leading-7 text-accent/90">Valor de Inversión</h3>
@@ -89,9 +92,17 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                     </span>
                                 </div>
                                 <p className="mt-4 text-sm leading-6 text-gray-300">
-                                    Financiación propia a medida. <br />
-                                    <span className="text-secondary hover:underline cursor-pointer">Ver planes de pago</span>
+                                    Financiación propia a medida.
                                 </p>
+
+                                {/* Calculator Component */}
+                                <InvestmentCalculator
+                                    price={property.price}
+                                    propertyTitle={`Unidad ${property.unitNumber}`}
+                                    typologyName={typology?.name || ''}
+                                    disposition={property.disposition || 'front'}
+                                />
+
                                 <div className="mt-8 flex flex-col gap-3">
                                     <p className="text-sm font-medium text-gray-400 mb-1">Contactar Comercializadora:</p>
                                     {agencies.length > 0 ? (

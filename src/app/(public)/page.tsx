@@ -30,7 +30,7 @@ export default async function LandingPage() {
 
                 <div className="mx-auto max-w-2xl py-16 text-center">
                     <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                        Vivir en <span className="text-accent">EDEN</span> es vivir conectado.
+                        Vivir en <span className="text-accent">EDEN</span> es vivir conectado
                     </h1>
                     <p className="mt-6 text-lg leading-8 text-gray-300">
                         Un desarrollo exclusivo en el corazón de Corrientes. Diseño moderno, ubicación estratégica y amenities de primera categoría.

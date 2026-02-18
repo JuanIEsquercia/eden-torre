@@ -123,6 +123,14 @@ export default function PropertyForm({ typologies, initialData }: PropertyFormPr
                         <option value="sold">Vendido</option>
                     </select>
                 </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Disposición</label>
+                    <select name="disposition" defaultValue={initialData?.disposition || 'front'} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+                        <option value="front">Frente</option>
+                        <option value="back">Contrafrente</option>
+                        <option value="lateral">Lateral / Interno</option>
+                    </select>
+                </div>
 
                 {/* Image Upload Section */}
                 <div className="md:col-span-2 lg:col-span-3">

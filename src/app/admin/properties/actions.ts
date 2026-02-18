@@ -11,6 +11,7 @@ export interface Property {
     status: 'available' | 'reserved' | 'sold'
     price: number
     area: number
+    disposition?: 'front' | 'back' | 'lateral'
     images?: {
         url: string
         publicId: string
@@ -32,6 +33,7 @@ export async function getProperties(): Promise<Property[]> {
                 status: data.status,
                 price: data.price,
                 area: data.area,
+                disposition: data.disposition || 'front',
                 images: data.images || []
             }
         }) as Property[]
@@ -57,6 +59,7 @@ export async function getProperty(id: string): Promise<Property | null> {
                 status: data.status,
                 price: data.price,
                 area: data.area,
+                disposition: data.disposition || 'front',
                 images: data.images || []
             } as Property
         } else {
@@ -76,6 +79,7 @@ export async function createProperty(formData: FormData) {
     const price = Number(formData.get('price'))
     const area = Number(formData.get('area'))
     const status = formData.get('status') as string
+    const disposition = formData.get('disposition') as string
 
     // Parse images from JSON string
     const imagesJson = formData.get('images') as string
@@ -96,6 +100,7 @@ export async function createProperty(formData: FormData) {
             status,
             price,
             area,
+            disposition,
             images,
             createdAt: new Date()
         })
@@ -136,6 +141,7 @@ export async function updateProperty(formData: FormData) {
     const price = Number(formData.get('price'))
     const area = Number(formData.get('area'))
     const status = formData.get('status') as string
+    const disposition = formData.get('disposition') as string
 
     // Parse images from JSON string
     const imagesJson = formData.get('images') as string
@@ -156,6 +162,7 @@ export async function updateProperty(formData: FormData) {
             status,
             price,
             area,
+            disposition,
             images,
             updatedAt: new Date()
         })

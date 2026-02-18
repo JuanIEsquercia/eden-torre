@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Regla global: Bloquear TODO por defecto.
+    // Como tu aplicación usa "Server Actions" con Firebase Admin SDK para todo (leer y escribir),
+    // el servidor tiene permisos totales que ignoran estas reglas.
+    // Por lo tanto, podemos cerrar el acceso público completamente para máxima seguridad.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
