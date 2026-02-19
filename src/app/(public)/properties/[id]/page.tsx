@@ -117,14 +117,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                                     href={waLink}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex flex-col items-center justify-center gap-1 w-full rounded-xl bg-emerald-600 px-4 py-3 text-center shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 hover:scale-[1.02] transition-all group"
+                                                    className="relative flex items-center justify-center w-full rounded-xl bg-emerald-600 px-4 py-3 text-center shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 hover:scale-[1.02] transition-all group"
                                                 >
-                                                    <div className="flex items-center gap-2 font-bold text-white text-base">
-                                                        <MessageCircle className="h-5 w-5 fill-current" />
-                                                        Consultar por WhatsApp
-                                                    </div>
-                                                    <span className="text-xs font-medium text-emerald-100 opacity-90">
-                                                        con {agency.name}
+                                                    <MessageCircle className="absolute left-4 h-5 w-5 text-white/90" />
+                                                    <span className="font-bold text-white text-sm leading-tight text-white py-0.5 px-6">
+                                                        {agency.name}
                                                     </span>
                                                 </Link>
                                             )
