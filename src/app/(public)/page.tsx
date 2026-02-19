@@ -2,9 +2,34 @@ import Link from 'next/link'
 import { Building2, LayoutDashboard, CarFront, Waves, MapPin, HeartPulse, ArrowRight } from 'lucide-react'
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
+import { getUpdates } from '@/app/admin/updates/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { Agencies } from '@/components/public/Agencies'
 import { Brands } from '@/components/public/Brands'
+import { ProjectUpdates } from '@/components/public/ProjectUpdates'
+
+async function LatestUpdates() {
+    const updates = await getUpdates()
+    // Only show latest 3
+    const latest = updates.slice(0, 3)
+
+    if (latest.length === 0) return null
+
+    return (
+        <div id="updates" className="border-t border-gray-100">
+            <ProjectUpdates updates={latest} />
+            <div className="flex justify-center pb-24 -mt-12 bg-white">
+                <Link
+                    href="/avance-obra"
+                    className="text-sm font-semibold leading-6 text-accent hover:text-accent/80 flex items-center gap-1"
+                >
+                    Ver historial completo <ArrowRight className="h-4 w-4" />
+                </Link>
+            </div>
+        </div>
+    )
+}
+
 
 export const dynamic = 'force-dynamic'
 
@@ -144,6 +169,9 @@ export default async function LandingPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Project Updates Section (Latest 3) */}
+            <LatestUpdates />
 
             {/* Commercial Partners Section */}
             <Agencies />

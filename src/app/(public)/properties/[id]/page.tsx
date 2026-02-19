@@ -104,7 +104,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                 />
 
                                 <div className="mt-8 flex flex-col gap-3">
-                                    <p className="text-sm font-medium text-gray-400 mb-1">Contactar Comercializadora:</p>
+                                    <p className="text-sm font-medium text-gray-400 mb-1">Contactar Inmobiliaria:</p>
                                     {agencies.length > 0 ? (
                                         agencies.map((agency, index) => {
                                             const message = `Hola, estoy interesado en la Unidad ${property.unitNumber} de Torre Eden, vi la ficha en la web.`
@@ -117,10 +117,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                                     href={waLink}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 hover:scale-[1.01] transition-all tracking-wide group"
+                                                    className="flex flex-col items-center justify-center gap-1 w-full rounded-xl bg-emerald-600 px-4 py-3 text-center shadow-lg shadow-emerald-900/20 hover:bg-emerald-500 hover:scale-[1.02] transition-all group"
                                                 >
-                                                    <MessageCircle className="h-5 w-5 text-white/90 group-hover:scale-110 transition-transform" />
-                                                    Contactar a {agency.name}
+                                                    <div className="flex items-center gap-2 font-bold text-white text-base">
+                                                        <MessageCircle className="h-5 w-5 fill-current" />
+                                                        Consultar por WhatsApp
+                                                    </div>
+                                                    <span className="text-xs font-medium text-emerald-100 opacity-90">
+                                                        con {agency.name}
+                                                    </span>
                                                 </Link>
                                             )
                                         })

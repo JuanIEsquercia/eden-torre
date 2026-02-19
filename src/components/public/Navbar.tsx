@@ -8,6 +8,7 @@ const navigation = [
     { name: 'Inicio', href: '/' },
     { name: 'Propiedades', href: '/properties' },
     { name: 'Proyecto', href: '/#project' },
+    { name: 'Avance Obra', href: '/avance-obra' },
     { name: 'Inmobiliarias', href: '/#agencies' },
 ]
 

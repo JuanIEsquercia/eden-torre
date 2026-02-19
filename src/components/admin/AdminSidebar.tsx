@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Building2, Home, Upload, LogOut, Briefcase } from 'lucide-react'
+import { LayoutDashboard, Building2, Home, Upload, LogOut, Briefcase, History } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { logout } from '@/app/admin/actions'
 
@@ -12,7 +12,7 @@ const navigation = [
     { name: 'Propiedades', href: '/admin/properties', icon: Home },
     { name: 'Inmobiliarias', href: '/admin/agencies', icon: Building2 },
     { name: 'Marcas', href: '/admin/brands', icon: Briefcase },
-    { name: 'Archivos', href: '/admin/files', icon: Upload },
+    { name: 'Avance Obra', href: '/admin/updates', icon: History },
 ]
 
 export function AdminSidebar() {

@@ -34,6 +34,8 @@ export default function InvestmentCalculator({ price, propertyTitle, typologyNam
     return (
         <div>
             {/* Trigger Button - Clean & Professional */}
+            {/* FEATURE FLAG: Calculator hidden until pricing is defined */}
+            {/* 
             <div className="w-full border-t border-b border-white/10 py-4 my-4">
                 <button
                     onClick={() => setIsOpen(true)}
@@ -51,6 +53,7 @@ export default function InvestmentCalculator({ price, propertyTitle, typologyNam
                     <ChevronDown className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
                 </button>
             </div>
+            */}
 
             {/* Modal Overlay */}
             <AnimatePresence>
