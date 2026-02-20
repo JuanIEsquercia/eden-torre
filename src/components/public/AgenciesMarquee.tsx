@@ -16,12 +16,8 @@ export function AgenciesMarquee({ agencies }: { agencies: Agency[] }) {
     // User wants "automatically... solo como un sin fin".
     // Even if few items, duplicating them allows the loop.
 
-    // Duplicate the list to ensure seamless scrolling
-    // If few items (<6), maybe duplicate 4 times to fill width?
-    // Let's ensure enough items for a smooth scroll.
-    const repeatedAgencies = agencies.length < 5
-        ? [...agencies, ...agencies, ...agencies, ...agencies]
-        : [...agencies, ...agencies]
+    // Duplicate the list enough times to ensure seamless scrolling on any screen size
+    const repeatedAgencies = Array(12).fill(agencies).flat()
 
     return (
         <div className="relative w-full overflow-hidden mask-fade">
