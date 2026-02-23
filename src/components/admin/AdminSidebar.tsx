@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Building2, Home, Upload, LogOut, Briefcase, History } from 'lucide-react'
+import { LayoutDashboard, Building2, Home, Upload, LogOut, Briefcase, History, Image } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { logout } from '@/app/admin/actions'
 
@@ -10,7 +10,8 @@ const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Tipologías', href: '/admin/typologies', icon: Building2 },
     { name: 'Propiedades', href: '/admin/properties', icon: Home },
-    { name: 'Inmobiliarias', href: '/admin/agencies', icon: Building2 },
+    { name: 'Inmobiliarias', href: '/admin/agencies', icon: Briefcase },
+    { name: 'Galería Proyecto', href: '/admin/gallery', icon: Image },
     { name: 'Marcas', href: '/admin/brands', icon: Briefcase },
     { name: 'Avance Obra', href: '/admin/updates', icon: History },
 ]

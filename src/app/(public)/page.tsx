@@ -3,10 +3,12 @@ import { Building2, LayoutDashboard, CarFront, Waves, MapPin, HeartPulse, ArrowR
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { getUpdates } from '@/app/admin/updates/actions'
+import { getGalleryImages } from '@/app/admin/gallery/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { Agencies } from '@/components/public/Agencies'
 import { Brands } from '@/components/public/Brands'
 import { ProjectUpdates } from '@/components/public/ProjectUpdates'
+import { ProjectGallery } from '@/components/public/ProjectGalleryCarousel'
 
 async function LatestUpdates() {
     const updates = await getUpdates()
@@ -36,6 +38,7 @@ export const dynamic = 'force-dynamic'
 export default async function LandingPage() {
     const properties = await getProperties()
     const typologies = await getTypologies()
+    const galleryImages = await getGalleryImages()
 
     // Show only available properties, limit to 6 for the landing page
     const featuredProperties = properties
@@ -45,30 +48,41 @@ export default async function LandingPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <div className="relative isolate flex flex-col justify-center px-6 pt-14 lg:px-8 bg-primary min-h-[85vh]">
-                {/* ... (Hero content) ... */}
-                <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.gray.800),theme(colors.gray.900))] opacity-80" />
-                <div className="absolute inset-0 -z-20 h-full w-full object-cover">
-                    {/* TODO: Add real hero image here */}
-                    <div className="h-full w-full bg-gradient-to-br from-primary via-slate-900 to-black" />
-                </div>
+            <div className="relative isolate flex flex-col justify-center px-6 pt-14 lg:px-8 bg-primary min-h-[90vh] overflow-hidden">
+                {/* Premium Background Gradients */}
+                <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary via-slate-900 to-black opacity-90" />
+                <div className="absolute top-0 right-0 -z-10 w-full h-full bg-gradient-to-b from-transparent via-transparent to-primary/80" />
 
-                <div className="mx-auto max-w-2xl py-16 text-center">
-                    <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                        Vivir en <span className="text-accent">EDEN</span> es vivir conectado
+                {/* Subtle Accent Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-20 w-[800px] h-[800px] bg-accent/15 rounded-full blur-[120px] pointer-events-none" />
+
+                <div className="mx-auto max-w-4xl py-16 text-center z-10">
+                    <div className="hidden sm:mb-8 sm:flex sm:justify-center">
+                        <div className="relative rounded-full px-4 py-1.5 text-xs font-semibold leading-6 text-accent ring-1 ring-accent/30 hover:ring-accent/50 bg-accent/5 backdrop-blur-sm transition-all tracking-widest uppercase mb-4">
+                            Lanzamiento Exclusivo en Corrientes
+                        </div>
+                    </div>
+
+                    <h1 className="text-5xl font-extrabold tracking-tighter text-white sm:text-7xl drop-shadow-md">
+                        Vivir en <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-yellow-400">EDEN</span> es vivir conectado
                     </h1>
-                    <p className="mt-6 text-lg leading-8 text-gray-300">
-                        Un desarrollo exclusivo en el corazón de Corrientes. Diseño moderno, ubicación estratégica y amenities de primera categoría.
+
+                    <p className="mt-8 text-lg leading-relaxed text-gray-300 max-w-2xl mx-auto font-light">
+                        Un desarrollo inmobiliario de vanguardia. Diseño moderno, ubicación estratégica y amenities de primera categoría diseñados para elevar tu calidad de vida.
                     </p>
-                    <div className="mt-10 flex items-center justify-center gap-x-6">
+
+                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
                         <Link
                             href="/properties"
-                            className="rounded-md bg-accent px-3.5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                            className="w-full sm:w-auto rounded-full bg-accent px-8 py-3.5 text-sm font-bold tracking-wide text-primary shadow-[0_0_20px_rgba(202,138,4,0.3)] hover:shadow-[0_0_30px_rgba(202,138,4,0.5)] hover:scale-105 transition-all duration-300 uppercase"
                         >
-                            Ver Unidades Disponibles
+                            Ver Unidades
                         </Link>
-                        <Link href="/#project" className="text-sm font-semibold leading-6 text-white hover:text-accent transition-colors">
-                            Conocer más <span aria-hidden="true">→</span>
+                        <Link
+                            href="/#project"
+                            className="w-full sm:w-auto rounded-full px-8 py-3.5 text-sm font-semibold tracking-wide text-white ring-1 ring-white/20 hover:ring-white hover:bg-white/10 transition-all duration-300"
+                        >
+                            Descubrir Proyecto
                         </Link>
                     </div>
                 </div>
@@ -78,16 +92,26 @@ export default async function LandingPage() {
             <Brands />
 
             {/* Feature/Overview Section */}
-            <div id="project" className="pt-16 pb-24 sm:pb-32 bg-white">
+            <div id="project" className="pt-24 pb-24 bg-white">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto max-w-2xl lg:text-center">
-                        <h2 className="text-base font-semibold leading-7 text-accent">Desarrollo EDEN</h2>
-                        <p className="mt-2 text-3xl font-bold tracking-tight text-primary sm:text-4xl">
-                            Innovación y confort en barrio San Martín
+                    <div className="mx-auto max-w-2xl lg:text-center mb-16">
+                        <h2 className="text-base font-semibold leading-7 text-accent uppercase tracking-widest">El Edificio</h2>
+                        <p className="mt-2 text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
+                            Elegancia y Vanguardia
                         </p>
-                        <p className="mt-6 text-lg leading-8 text-gray-600">
-                            Una torre residencial diseñada con enfoque en la eficiencia y la calidad de vida.
-                            Ubicada estratégicamente en Gdor. Raúl Castillo 2149, Corrientes Capital.
+                        <p className="mt-4 text-lg leading-8 text-gray-600">
+                            Diseñamos cada detalle para ofrecerte una experiencia de vida superior en la mejor ubicación de Corrientes.
+                        </p>
+                    </div>
+
+                    {/* New Project Gallery */}
+                    <div className="mb-24">
+                        <ProjectGallery images={galleryImages} />
+                    </div>
+
+                    <div className="mx-auto max-w-2xl lg:text-center">
+                        <p className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-12">
+                            Especificaciones y Amenities
                         </p>
                     </div>
 
@@ -142,6 +166,9 @@ export default async function LandingPage() {
                 </div>
             </div>
 
+            {/* Commercial Partners Section */}
+            <Agencies />
+
             {/* Properties Section */}
             <div id="properties" className="py-24 sm:py-32 bg-gray-50">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -172,10 +199,6 @@ export default async function LandingPage() {
 
             {/* Project Updates Section (Latest 3) */}
             <LatestUpdates />
-
-            {/* Commercial Partners Section */}
-            <Agencies />
-
         </div>
     )
 }
