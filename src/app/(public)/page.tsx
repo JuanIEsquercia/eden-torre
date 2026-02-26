@@ -9,6 +9,7 @@ import { Agencies } from '@/components/public/Agencies'
 import { Brands } from '@/components/public/Brands'
 import { ProjectUpdates } from '@/components/public/ProjectUpdates'
 import { ProjectGallery } from '@/components/public/ProjectGalleryCarousel'
+import { FinancingBanner } from '@/components/public/FinancingBanner'
 
 async function LatestUpdates() {
     const updates = await getUpdates()
@@ -178,6 +179,11 @@ export default async function LandingPage() {
                             Descubre las oportunidades exclusivas que EDEN tiene para ofrecerte.
                         </p>
                     </div>
+
+                    <div className="mx-auto mt-12 max-w-5xl">
+                        <FinancingBanner contactUrl="/#agencies" />
+                    </div>
+
                     <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                         {featuredProperties.map((property) => {
                             const typology = typologies.find(t => t.id === property.typologyId)

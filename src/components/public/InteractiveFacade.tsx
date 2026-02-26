@@ -146,6 +146,7 @@ export default function InteractiveFacade({ properties }: InteractiveFacadeProps
                                         </div>
                                         <div className="space-y-1 text-sm text-gray-600">
                                             <p>Piso {property.floor}</p>
+                                            <p className="text-xs text-gray-500 uppercase tracking-wider mt-2">Valor de Contado</p>
                                             <p className="text-primary font-bold text-lg">
                                                 {formatCurrency(property.price)}
                                             </p>

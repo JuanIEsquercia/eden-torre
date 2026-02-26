@@ -58,8 +58,9 @@ export function PropertyCard({ property, typology }: PropertyCardProps) {
 
                 {/* Price Tag (Floating) */}
                 <div className="absolute bottom-4 right-4 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="rounded-lg bg-gray-900/90 px-3 py-1.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm">
-                        USD {property.price.toLocaleString()}
+                    <div className="rounded-lg bg-gray-900/90 px-3 py-1.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm flex flex-col items-end">
+                        <span className="text-[10px] uppercase text-gray-300 leading-none mb-0.5">Valor de Contado</span>
+                        <span>USD {property.price.toLocaleString()}</span>
                     </div>
                 </div>
             </div>

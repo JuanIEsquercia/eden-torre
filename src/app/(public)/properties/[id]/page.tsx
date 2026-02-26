@@ -6,6 +6,7 @@ import { Ruler, BedDouble, Calendar, ArrowLeft, MessageCircle } from 'lucide-rea
 import Link from 'next/link'
 import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
+import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,11 +82,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                 </h1>
                             </div>
 
-
+                            {/* Financing CTA */}
+                            <FinancingSidebarCard />
 
                             {/* Conversion Card */}
                             <div className="rounded-2xl bg-slate-900 p-8 shadow-2xl ring-1 ring-white/10">
-                                <h3 className="text-base font-semibold leading-7 text-accent/90">Valor de Inversión</h3>
+                                <h3 className="text-base font-semibold leading-7 text-accent/90">Valor de Contado</h3>
                                 <div className="mt-4 flex items-baseline gap-x-2">
                                     <span className="text-4xl font-bold tracking-tight text-white">
                                         USD {property.price.toLocaleString('es-AR')}

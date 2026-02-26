@@ -1,6 +1,7 @@
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
+import { FinancingBanner } from '@/components/public/FinancingBanner'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,6 +23,10 @@ export default async function PublicPropertiesPage() {
                     <p className="mt-6 text-lg leading-8 text-gray-600">
                         Explora nuestras unidades disponibles.
                     </p>
+                </div>
+
+                <div className="mx-auto mt-12 max-w-5xl">
+                    <FinancingBanner contactUrl="/#agencies" />
                 </div>
 
                 <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">

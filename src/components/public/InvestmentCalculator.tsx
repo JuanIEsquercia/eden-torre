@@ -91,8 +91,8 @@ export default function InvestmentCalculator({ price, propertyTitle, typologyNam
 
                             <div className="p-6 space-y-6">
                                 {/* Property Info */}
-                                <div className="text-center border-b border-gray-100 pb-4">
-                                    <p className="text-sm text-gray-500">{propertyTitle}</p>
+                                <div className="p-4 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-500 font-medium">Valor de Contado</p>
                                     <p className="text-2xl font-bold text-primary mt-1">{formatCurrency(price)}</p>
                                 </div>
 
