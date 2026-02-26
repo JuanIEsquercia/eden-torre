@@ -36,6 +36,16 @@ async function LatestUpdates() {
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Torre EDEN | Desarrollo Inmobiliario en Corrientes',
+    description: 'Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría. Lanzamiento exclusivo en Corrientes.',
+    openGraph: {
+        title: 'Torre EDEN | Tu próxima inversión en Corrientes',
+        description: 'Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría. Lanzamiento exclusivo.',
+        url: '/',
+    },
+}
+
 export default async function LandingPage() {
     const properties = await getProperties()
     const typologies = await getTypologies()

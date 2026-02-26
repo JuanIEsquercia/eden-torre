@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://torre-eden.com'),
   title: {
     default: "Torre EDEN | Desarrollo Inmobiliario en Corrientes",
     template: "%s | Torre EDEN"
@@ -23,16 +24,24 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_AR",
-    url: "https://torre-eden.com", // Replace with real URL later
+    url: "/",
     siteName: "Torre EDEN",
     title: "Torre EDEN | Tu próxima inversión en Corrientes",
     description: "Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría.",
-    // images: [{ url: '/og-image.jpg' }], // Placeholder for future OG image
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Torre EDEN - Desarrollo Inmobiliario',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Torre EDEN | Desarrollo Inmobiliario en Corrientes",
     description: "Invertí en el desarrollo más exclusivo de la ciudad.",
+    images: ['/og-image.jpg'],
   },
 };
 

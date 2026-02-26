@@ -5,6 +5,16 @@ import { FinancingBanner } from '@/components/public/FinancingBanner'
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+    title: 'Catálogo de Propiedades',
+    description: 'Explora nuestras unidades disponibles en Torre EDEN. Encontrá tu próxima inversión inmobiliaria en Corrientes.',
+    openGraph: {
+        title: 'Catálogo de Propiedades | Torre EDEN',
+        description: 'Explora nuestras unidades disponibles. Encontrá tu próxima inversión inmobiliaria en Corrientes.',
+        url: '/properties',
+    },
+}
+
 export default async function PublicPropertiesPage() {
     const properties = await getProperties()
     const typologies = await getTypologies()

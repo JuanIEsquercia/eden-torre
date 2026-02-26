@@ -2,6 +2,7 @@ import { getProperty } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { getAgencies } from '@/app/admin/agencies/actions'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 import { Ruler, BedDouble, Calendar, ArrowLeft, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { PropertyGallery } from '@/components/public/PropertyGallery'
@@ -9,6 +10,50 @@ import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params
+    const property = await getProperty(id)
+
+    if (!property) {
+        return {
+            title: 'Propiedad no encontrada'
+        }
+    }
+
+    const typologies = await getTypologies()
+    const typology = typologies.find(t => t.id === property.typologyId)
+    const title = `Unidad ${property.unitNumber} - ${typology?.name || 'Departamento'} | Torre EDEN`
+    const description = `Invertí en la Unidad ${property.unitNumber}, ${typology?.name} de ${property.area}m². Disfrutá de amenities premium y financiación a medida.`
+
+    // Use the first property image for OpenGraph if available
+    const ogImage = property.images && property.images.length > 0 ? property.images[0].url : '/og-image.jpg'
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url: `/properties/${id}`,
+            images: [
+                {
+                    url: ogImage,
+                    width: 1200,
+                    height: 630,
+                    alt: `Unidad ${property.unitNumber} - Torre EDEN`,
+                },
+            ],
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [ogImage],
+        }
+    }
+}
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
