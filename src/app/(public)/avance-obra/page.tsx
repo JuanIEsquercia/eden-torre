@@ -1,7 +1,7 @@
 import { getUpdates } from '@/app/admin/updates/actions'
 import { ProjectUpdates } from '@/components/public/ProjectUpdates'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function ProjectProgressPage() {
     const updates = await getUpdates()

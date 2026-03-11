@@ -1,7 +1,7 @@
 import { getProperties } from '@/app/admin/properties/actions'
 import InteractiveFacade from '@/components/public/InteractiveFacade'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function InteractivePage() {
     const properties = await getProperties()

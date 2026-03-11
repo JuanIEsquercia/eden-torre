@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { getProperty } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { getAgencies } from '@/app/admin/agencies/actions'
@@ -9,11 +10,16 @@ import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
+
+// Cached data fetchers — deduplicate between generateMetadata and page component
+const getCachedProperty = cache((id: string) => getProperty(id))
+const getCachedTypologies = cache(() => getTypologies())
+const getCachedAgencies = cache(() => getAgencies())
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params
-    const property = await getProperty(id)
+    const property = await getCachedProperty(id)
 
     if (!property) {
         return {
@@ -21,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         }
     }
 
-    const typologies = await getTypologies()
+    const typologies = await getCachedTypologies()
     const typology = typologies.find(t => t.id === property.typologyId)
     const title = `Unidad ${property.unitNumber} - ${typology?.name || 'Departamento'} | Torre EDEN`
     const description = `Invertí en la Unidad ${property.unitNumber}, ${typology?.name} de ${property.area}m². Disfrutá de amenities premium y financiación a medida.`
@@ -57,9 +63,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const property = await getProperty(id)
-    const typologies = await getTypologies()
-    const agencies = await getAgencies()
+    const property = await getCachedProperty(id)
+    const typologies = await getCachedTypologies()
+    const agencies = await getCachedAgencies()
 
     if (!property) {
         notFound()

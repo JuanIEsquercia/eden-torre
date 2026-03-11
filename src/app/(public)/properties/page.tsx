@@ -3,7 +3,7 @@ import { getTypologies } from '@/app/admin/typologies/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { FinancingBanner } from '@/components/public/FinancingBanner'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export const metadata = {
     title: 'Catálogo de Propiedades',

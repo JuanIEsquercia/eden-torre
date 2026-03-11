@@ -34,7 +34,7 @@ async function LatestUpdates() {
 }
 
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export const metadata = {
     title: 'Torre EDEN | Desarrollo Inmobiliario en Corrientes',
