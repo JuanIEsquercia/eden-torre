@@ -1,9 +1,13 @@
-import { getBrands } from '@/app/admin/brands/actions'
+import { getBrands, type Brand } from '@/app/admin/brands/actions'
 import { BrandLogo } from './BrandLogo'
 import Link from 'next/link'
 
-export async function Brands() {
-    const brands = await getBrands()
+interface BrandsProps {
+    brands?: Brand[]
+}
+
+export async function Brands({ brands: prefetchedBrands }: BrandsProps = {}) {
+    const brands = prefetchedBrands ?? await getBrands()
 
     if (!brands || brands.length === 0) return null
 

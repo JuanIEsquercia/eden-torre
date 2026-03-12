@@ -1,9 +1,12 @@
+import { cache } from 'react'
 import Link from 'next/link'
 import { Building2, LayoutDashboard, CarFront, Waves, MapPin, HeartPulse, ArrowRight } from 'lucide-react'
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { getUpdates } from '@/app/admin/updates/actions'
 import { getGalleryImages } from '@/app/admin/gallery/actions'
+import { getAgencies } from '@/app/admin/agencies/actions'
+import { getBrands } from '@/app/admin/brands/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { Agencies } from '@/components/public/Agencies'
 import { Brands } from '@/components/public/Brands'
@@ -11,8 +14,16 @@ import { ProjectUpdates } from '@/components/public/ProjectUpdates'
 import { ProjectGallery } from '@/components/public/ProjectGalleryCarousel'
 import { FinancingBanner } from '@/components/public/FinancingBanner'
 
+// React.cache() deduplicates these calls within a single render pass
+const getCachedProperties = cache(() => getProperties())
+const getCachedTypologies = cache(() => getTypologies())
+const getCachedUpdates = cache(() => getUpdates())
+const getCachedGalleryImages = cache(() => getGalleryImages())
+const getCachedAgencies = cache(() => getAgencies())
+const getCachedBrands = cache(() => getBrands())
+
 async function LatestUpdates() {
-    const updates = await getUpdates()
+    const updates = await getCachedUpdates()
     // Only show latest 3
     const latest = updates.slice(0, 3)
 
@@ -34,7 +45,7 @@ async function LatestUpdates() {
 }
 
 
-export const revalidate = 60
+export const revalidate = 10800 // 3 hours — property data doesn't change frequently
 
 export const metadata = {
     title: 'Torre EDEN | Desarrollo Inmobiliario en Corrientes',
@@ -47,9 +58,14 @@ export const metadata = {
 }
 
 export default async function LandingPage() {
-    const properties = await getProperties()
-    const typologies = await getTypologies()
-    const galleryImages = await getGalleryImages()
+    // All fetches use React.cache() — zero duplicate reads within this render
+    const [properties, typologies, galleryImages, agencies, brands] = await Promise.all([
+        getCachedProperties(),
+        getCachedTypologies(),
+        getCachedGalleryImages(),
+        getCachedAgencies(),
+        getCachedBrands(),
+    ])
 
     // Show only available properties, limit to 6 for the landing page
     const featuredProperties = properties
@@ -100,7 +116,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Brands / Partners Section */}
-            <Brands />
+            <Brands brands={brands} />
 
             {/* Feature/Overview Section */}
             <div id="project" className="pt-24 pb-24 bg-white">
@@ -178,7 +194,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Commercial Partners Section */}
-            <Agencies />
+            <Agencies agencies={agencies} />
 
             {/* Properties Section */}
             <div id="properties" className="py-24 sm:py-32 bg-gray-50">

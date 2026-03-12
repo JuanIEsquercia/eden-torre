@@ -1,8 +1,12 @@
-import { getAgencies } from '@/app/admin/agencies/actions'
+import { getAgencies, type Agency } from '@/app/admin/agencies/actions'
 import { AgenciesMarquee } from './AgenciesMarquee'
 
-export async function Agencies() {
-    const agencies = await getAgencies()
+interface AgenciesProps {
+    agencies?: Agency[]
+}
+
+export async function Agencies({ agencies: prefetchedAgencies }: AgenciesProps = {}) {
+    const agencies = prefetchedAgencies ?? await getAgencies()
 
     // If no agencies, we might want to hide thesection or show a placeholder.
     // For now, let's hide it if empty to keep the design clean.

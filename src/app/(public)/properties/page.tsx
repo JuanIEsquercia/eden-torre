@@ -1,9 +1,13 @@
+import { cache } from 'react'
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { FinancingBanner } from '@/components/public/FinancingBanner'
 
-export const revalidate = 60
+const getCachedProperties = cache(() => getProperties())
+const getCachedTypologies = cache(() => getTypologies())
+
+export const revalidate = 10800 // 3 hours
 
 export const metadata = {
     title: 'Catálogo de Propiedades',
@@ -16,8 +20,10 @@ export const metadata = {
 }
 
 export default async function PublicPropertiesPage() {
-    const properties = await getProperties()
-    const typologies = await getTypologies()
+    const [properties, typologies] = await Promise.all([
+        getCachedProperties(),
+        getCachedTypologies(),
+    ])
 
     // Filter only available properties or maybe all but with status badge?
     // Let's show all for now but highlgiht status.

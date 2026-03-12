@@ -10,7 +10,7 @@ import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
 
-export const revalidate = 60
+export const revalidate = 10800 // 3 hours
 
 // Cached data fetchers — deduplicate between generateMetadata and page component
 const getCachedProperty = cache((id: string) => getProperty(id))

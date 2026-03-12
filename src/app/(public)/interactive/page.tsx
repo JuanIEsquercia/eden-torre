@@ -1,7 +1,7 @@
 import { getProperties } from '@/app/admin/properties/actions'
 import InteractiveFacade from '@/components/public/InteractiveFacade'
 
-export const revalidate = 60
+export const revalidate = 10800 // 3 hours
 
 export default async function InteractivePage() {
     const properties = await getProperties()
