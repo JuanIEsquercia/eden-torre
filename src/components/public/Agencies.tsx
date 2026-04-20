@@ -1,5 +1,6 @@
 import { getAgencies, type Agency } from '@/app/admin/agencies/actions'
 import { AgenciesMarquee } from './AgenciesMarquee'
+import { AgencyContactGrid } from './AgencyContactGrid'
 
 interface AgenciesProps {
     agencies?: Agency[]
@@ -8,8 +9,6 @@ interface AgenciesProps {
 export async function Agencies({ agencies: prefetchedAgencies }: AgenciesProps = {}) {
     const agencies = prefetchedAgencies ?? await getAgencies()
 
-    // If no agencies, we might want to hide thesection or show a placeholder.
-    // For now, let's hide it if empty to keep the design clean.
     if (!agencies || agencies.length === 0) return null
 
     return (
@@ -20,12 +19,15 @@ export async function Agencies({ agencies: prefetchedAgencies }: AgenciesProps =
                         Comercializan EDEN
                     </h2>
                     <p className="mt-2 text-lg leading-8 text-gray-600">
-                        Selecciona la inmobiliaria de tu confianza
+                        Elegí la inmobiliaria de tu confianza y consultá por WhatsApp
                     </p>
                 </div>
 
                 <AgenciesMarquee agencies={agencies} />
 
+                <div className="mt-16">
+                    <AgencyContactGrid agencies={agencies} />
+                </div>
             </div>
         </div>
     )

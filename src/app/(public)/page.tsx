@@ -67,6 +67,8 @@ export default async function LandingPage() {
         getCachedBrands(),
     ])
 
+    const soldCount = properties.filter(p => p.status === 'sold' || p.status === 'reserved').length
+
     // Show only available properties, limit to 6 for the landing page
     const featuredProperties = properties
         .filter(p => p.status === 'available')
@@ -84,10 +86,19 @@ export default async function LandingPage() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-20 w-[800px] h-[800px] bg-accent/15 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="mx-auto max-w-4xl py-16 text-center z-10">
-                    <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-                        <div className="relative rounded-full px-4 py-1.5 text-xs font-semibold leading-6 text-accent ring-1 ring-accent/30 hover:ring-accent/50 bg-accent/5 backdrop-blur-sm transition-all tracking-widest uppercase mb-4">
+                    <div className="mb-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <div className="relative rounded-full px-4 py-1.5 text-xs font-semibold leading-6 text-accent ring-1 ring-accent/30 hover:ring-accent/50 bg-accent/5 backdrop-blur-sm transition-all tracking-widest uppercase">
                             Lanzamiento Exclusivo en Corrientes
                         </div>
+                        {soldCount > 0 && (
+                            <div className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold leading-6 text-white ring-1 ring-white/20 bg-white/5 backdrop-blur-sm">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                                </span>
+                                ¡Ya se vendieron {soldCount} unidad{soldCount !== 1 ? 'es' : ''}!
+                            </div>
+                        )}
                     </div>
 
                     <h1 className="text-5xl font-extrabold tracking-tighter text-white sm:text-7xl drop-shadow-md">
