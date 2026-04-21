@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     "pozo Corrientes",
   ],
   authors: [{ name: "Torre EDEN" }],
+  verification: {
+    google: "gxfFDx3JP6YWyCQNl0zVrOYTJ6JTOONcB6pYULBLbYo",
+  },
   openGraph: {
     type: "website",
     locale: "es_AR",
