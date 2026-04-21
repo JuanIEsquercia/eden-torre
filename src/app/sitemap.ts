@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getProperties } from '@/app/admin/properties/actions'
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://edentorre.com'
 
 export const revalidate = 10800 // 3 hours
 
