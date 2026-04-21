@@ -13,6 +13,7 @@ import { Brands } from '@/components/public/Brands'
 import { ProjectUpdates } from '@/components/public/ProjectUpdates'
 import { ProjectGallery } from '@/components/public/ProjectGalleryCarousel'
 import { FinancingBanner } from '@/components/public/FinancingBanner'
+import { buildApartmentComplexSchema } from '@/lib/schema'
 
 // React.cache() deduplicates these calls within a single render pass
 const getCachedProperties = cache(() => getProperties())
@@ -74,8 +75,15 @@ export default async function LandingPage() {
         .filter(p => p.status === 'available')
         .slice(0, 3) // Show top 3 available
 
+    const availableCount = properties.filter(p => p.status === 'available').length
+    const complexSchema = buildApartmentComplexSchema(availableCount)
+
     return (
         <div className="flex flex-col min-h-screen">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(complexSchema) }}
+            />
             {/* Hero Section */}
             <div className="relative isolate flex flex-col justify-center px-6 pt-14 lg:px-8 bg-primary min-h-[90vh] overflow-hidden">
                 {/* Premium Background Gradients */}

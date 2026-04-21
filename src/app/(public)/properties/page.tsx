@@ -3,6 +3,7 @@ import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { PropertyCard } from '@/components/public/PropertyCard'
 import { FinancingBanner } from '@/components/public/FinancingBanner'
+import { buildPropertyListSchema } from '@/lib/schema'
 
 const getCachedProperties = cache(() => getProperties())
 const getCachedTypologies = cache(() => getTypologies())
@@ -25,11 +26,15 @@ export default async function PublicPropertiesPage() {
         getCachedTypologies(),
     ])
 
-    // Filter only available properties or maybe all but with status badge?
-    // Let's show all for now but highlgiht status.
+    const typologyMap = Object.fromEntries(typologies.map(t => [t.id, t.name]))
+    const listSchema = buildPropertyListSchema(properties, typologyMap)
 
     return (
         <div className="bg-white py-24 sm:py-32">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(listSchema) }}
+            />
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:text-center">
                     <h2 className="text-base font-semibold leading-7 text-accent">Catálogo</h2>

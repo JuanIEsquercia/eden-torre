@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
+import { buildApartmentSchema } from '@/lib/schema'
 
 export const revalidate = 10800 // 3 hours
 
@@ -73,8 +74,18 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
     const typology = typologies.find(t => t.id === property.typologyId)
 
+    const schema = buildApartmentSchema(
+        property,
+        typology?.name ?? 'Departamento',
+        property.images?.[0]?.url
+    )
+
     return (
         <div className="bg-white py-12 sm:py-16">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mb-8">
                     <Link href="/properties" className="text-sm font-semibold leading-6 text-primary hover:text-gray-600 flex items-center gap-2 transition-colors">
