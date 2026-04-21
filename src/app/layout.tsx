@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://edentorre.com'),
   title: {
     default: "Torre EDEN | Departamentos del Pozo en Corrientes",
     template: "%s | Torre EDEN"
@@ -72,8 +72,8 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Torre EDEN',
-              url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com',
-              logo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'}/og-image.jpg`,
+              url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://edentorre.com',
+              logo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://edentorre.com'}/og-image.jpg`,
               address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Gdor. Raúl Castillo 2149',

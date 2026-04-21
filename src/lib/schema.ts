@@ -1,6 +1,6 @@
 import type { Property } from '@/app/admin/properties/actions'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://edentorre.com'
 
 const ADDRESS = {
     '@type': 'PostalAddress',
