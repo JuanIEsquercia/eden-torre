@@ -11,11 +11,18 @@ const getCachedTypologies = cache(() => getTypologies())
 export const revalidate = 10800 // 3 hours
 
 export const metadata = {
-    title: 'Catálogo de Propiedades',
-    description: 'Explora nuestras unidades disponibles en Torre EDEN. Encontrá tu próxima inversión inmobiliaria en Corrientes.',
+    title: 'Departamentos del Pozo en Corrientes | Catálogo Torre EDEN',
+    description: 'Explorá el catálogo completo de departamentos del pozo en Corrientes. Monoambientes, 1 y 2 dormitorios disponibles. Precios, superficies y financiación en Torre EDEN.',
+    keywords: [
+        'departamentos del pozo Corrientes',
+        'comprar departamento Corrientes',
+        'departamentos nuevos Corrientes',
+        'desarrollo inmobiliario Corrientes',
+        'unidades disponibles Torre EDEN',
+    ],
     openGraph: {
-        title: 'Catálogo de Propiedades | Torre EDEN',
-        description: 'Explora nuestras unidades disponibles. Encontrá tu próxima inversión inmobiliaria en Corrientes.',
+        title: 'Departamentos del Pozo en Corrientes | Torre EDEN',
+        description: 'Catálogo completo de departamentos del pozo en Corrientes. Precios y disponibilidad en tiempo real.',
         url: '/properties',
     },
 }

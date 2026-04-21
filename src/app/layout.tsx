@@ -14,34 +14,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://torre-eden.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'),
   title: {
-    default: "Torre EDEN | Desarrollo Inmobiliario en Corrientes",
+    default: "Torre EDEN | Departamentos del Pozo en Corrientes",
     template: "%s | Torre EDEN"
   },
-  description: "Departamentos exclusivos en venta en el corazón de Corrientes. Monoambientes, 1 y 2 dormitorios con amenities premium y financiación a medida. Vivir en EDEN es vivir conectado.",
-  keywords: ["departamentos corrientes", "inmobiliaria corrientes", "torre eden", "venta departamentos", "inversión inmobiliaria", "desarrollo al pozo"],
-  authors: [{ name: "EDEN Corrientes" }],
+  description: "Torre EDEN: desarrollo inmobiliario del pozo en Corrientes Capital. Departamentos de 1 y 2 ambientes con amenities premium. Financiación propia hasta 84 cuotas. Invertí hoy.",
+  keywords: [
+    "departamentos del pozo Corrientes",
+    "desarrollo del pozo Corrientes",
+    "departamentos en venta Corrientes",
+    "desarrollo inmobiliario Corrientes",
+    "inversión inmobiliaria Corrientes",
+    "comprar departamento Corrientes",
+    "departamentos nuevos Corrientes",
+    "Torre EDEN Corrientes",
+    "departamentos Corrientes Capital",
+    "pozo Corrientes",
+  ],
+  authors: [{ name: "Torre EDEN" }],
   openGraph: {
     type: "website",
     locale: "es_AR",
     url: "/",
     siteName: "Torre EDEN",
-    title: "Torre EDEN | Tu próxima inversión en Corrientes",
-    description: "Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría.",
+    title: "Torre EDEN | Departamentos del Pozo en Corrientes",
+    description: "Desarrollo inmobiliario del pozo en Corrientes. Departamentos de 1 y 2 ambientes, amenities premium y financiación a medida. Invertí desde el pozo.",
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Torre EDEN - Desarrollo Inmobiliario',
+        alt: 'Torre EDEN - Desarrollo del Pozo en Corrientes',
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Torre EDEN | Desarrollo Inmobiliario en Corrientes",
-    description: "Invertí en el desarrollo más exclusivo de la ciudad.",
+    title: "Torre EDEN | Departamentos del Pozo en Corrientes",
+    description: "Desarrollo inmobiliario del pozo en Corrientes. Financiación propia hasta 84 cuotas.",
     images: ['/og-image.jpg'],
   },
 };
@@ -52,10 +63,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Torre EDEN',
+              url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com',
+              logo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://torre-eden.com'}/og-image.jpg`,
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: 'Gdor. Raúl Castillo 2149',
+                addressLocality: 'Corrientes',
+                addressRegion: 'Corrientes',
+                addressCountry: 'AR',
+              },
+              description: 'Desarrollo inmobiliario del pozo en Corrientes Capital. Departamentos de 1 y 2 ambientes con amenities premium y financiación propia.',
+            })
+          }}
+        />
         {children}
       </body>
       {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}

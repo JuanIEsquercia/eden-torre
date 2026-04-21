@@ -49,11 +49,18 @@ async function LatestUpdates() {
 export const revalidate = 10800 // 3 hours — property data doesn't change frequently
 
 export const metadata = {
-    title: 'Torre EDEN | Desarrollo Inmobiliario en Corrientes',
-    description: 'Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría. Lanzamiento exclusivo en Corrientes.',
+    title: 'Torre EDEN | Departamentos del Pozo en Corrientes Capital',
+    description: 'Desarrollo inmobiliario del pozo en Corrientes. Monoambientes, 1 y 2 dormitorios con piscina, solárium y parrilla. Financiación propia hasta 84 cuotas. ¡Invertí desde el pozo!',
+    keywords: [
+        'departamentos del pozo Corrientes',
+        'desarrollo del pozo Corrientes',
+        'inversión inmobiliaria Corrientes',
+        'departamentos Corrientes Capital',
+        'Torre EDEN',
+    ],
     openGraph: {
-        title: 'Torre EDEN | Tu próxima inversión en Corrientes',
-        description: 'Departamentos exclusivos en venta. Diseño moderno, ubicación estratégica y amenities de primera categoría. Lanzamiento exclusivo.',
+        title: 'Torre EDEN | Departamentos del Pozo en Corrientes',
+        description: 'Desarrollo inmobiliario del pozo en Corrientes. Financiación hasta 84 cuotas. Amenities premium.',
         url: '/',
     },
 }
