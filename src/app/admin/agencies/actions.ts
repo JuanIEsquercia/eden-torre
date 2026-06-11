@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/firebase-admin'
+import { revalidatePath } from 'next/cache'
 
 export type Agency = {
     id: string
@@ -38,6 +39,7 @@ export async function createAgency(data: Omit<Agency, 'id' | 'createdAt'>) {
             ...data,
             createdAt: new Date()
         })
+        revalidatePath('/admin/agencies')
         return { success: true }
     } catch (error) {
         console.error("Error creating agency:", error)
@@ -48,6 +50,7 @@ export async function createAgency(data: Omit<Agency, 'id' | 'createdAt'>) {
 export async function deleteAgency(id: string) {
     try {
         await db.collection('agencies').doc(id).delete()
+        revalidatePath('/admin/agencies')
         return { success: true }
     } catch (error) {
         console.error("Error deleting agency:", error)
