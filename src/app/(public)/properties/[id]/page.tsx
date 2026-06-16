@@ -4,7 +4,7 @@ import { getTypologies } from '@/app/admin/typologies/actions'
 import { getAgencies } from '@/app/admin/agencies/actions'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import { Ruler, BedDouble, Calendar, ArrowLeft, MessageCircle } from 'lucide-react'
+import { Ruler, BedDouble, Calendar, ArrowLeft, MessageCircle, BadgeCheck } from 'lucide-react'
 import Link from 'next/link'
 import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
@@ -168,6 +168,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                 />
 
                                 <div className="mt-8 flex flex-col gap-3">
+                                    <div className="flex items-start gap-2 rounded-xl bg-accent/10 px-3 py-2.5 ring-1 ring-accent/20">
+                                        <BadgeCheck className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                                        <span className="text-xs font-semibold leading-relaxed text-accent">El desarrollista se hace cargo del 100% de la comisión inmobiliaria</span>
+                                    </div>
                                     <p className="text-sm font-medium text-gray-400 mb-1">Contactar Inmobiliaria:</p>
                                     {agencies.length > 0 ? (
                                         agencies.map((agency, index) => {

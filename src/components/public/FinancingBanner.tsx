@@ -1,6 +1,6 @@
 'use client'
 
-import { PercentCircle, CalendarDays, ArrowRight } from 'lucide-react'
+import { PercentCircle, CalendarDays, ArrowRight, BadgeCheck } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 
@@ -48,6 +48,12 @@ export function FinancingBanner({ contactUrl = '#contact' }: FinancingBannerProp
                                 <CalendarDays className="h-5 w-5 text-accent" />
                             </div>
                             <span className="text-sm font-medium text-gray-200">Hasta 84 cuotas</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-accent/10 ring-1 ring-accent/30">
+                                <BadgeCheck className="h-5 w-5 text-accent" />
+                            </div>
+                            <span className="text-sm font-semibold text-accent">El desarrollista se hace cargo del 100% de la comisión inmobiliaria</span>
                         </div>
                     </div>
 

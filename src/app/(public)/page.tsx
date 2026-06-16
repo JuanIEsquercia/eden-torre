@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import Link from 'next/link'
-import { Building2, LayoutDashboard, CarFront, Waves, MapPin, HeartPulse, ArrowRight } from 'lucide-react'
+import { Building2, LayoutDashboard, CarFront, Waves, MapPin, HeartPulse, ArrowRight, BadgeCheck } from 'lucide-react'
 import { getProperties } from '@/app/admin/properties/actions'
 import { getTypologies } from '@/app/admin/typologies/actions'
 import { getUpdates } from '@/app/admin/updates/actions'
@@ -124,7 +124,18 @@ export default async function LandingPage() {
                         Un desarrollo inmobiliario de vanguardia. Diseño moderno, ubicación estratégica y amenities de primera categoría diseñados para elevar tu calidad de vida.
                     </p>
 
-                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                    {/* Commission Highlight */}
+                    <div className="mt-10 flex justify-center">
+                        <div className="flex items-center gap-3 rounded-2xl border border-accent/40 bg-gradient-to-r from-accent/15 via-accent/10 to-accent/15 backdrop-blur-sm px-7 py-4 shadow-[0_0_40px_rgba(202,138,4,0.2)]">
+                            <BadgeCheck className="h-6 w-6 text-accent flex-shrink-0" />
+                            <p className="text-sm font-bold tracking-wide text-white">
+                                El desarrollista se hace cargo del{' '}
+                                <span className="text-accent">100% de la comisión inmobiliaria</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
                         <Link
                             href="/properties"
                             className="w-full sm:w-auto rounded-full bg-accent px-8 py-3.5 text-sm font-bold tracking-wide text-primary shadow-[0_0_20px_rgba(202,138,4,0.3)] hover:shadow-[0_0_30px_rgba(202,138,4,0.5)] hover:scale-105 transition-all duration-300 uppercase"
