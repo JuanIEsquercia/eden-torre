@@ -74,6 +74,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
     const typology = typologies.find(t => t.id === property.typologyId)
 
+    const SOLD_IMAGE_URL = 'https://res.cloudinary.com/diktsavzd/image/upload/v1772111530/properties/igok7navrzqtwx23whx8.png'
+    const displayImages = property.status === 'sold'
+        ? [{ url: SOLD_IMAGE_URL, publicId: '' }]
+        : property.images ?? []
+
     const schema = buildApartmentSchema(
         property,
         typology?.name ?? 'Departamento',
@@ -81,11 +86,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     )
 
     return (
+        <>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
         <div className="bg-white py-12 sm:py-16">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-            />
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mb-8">
                     <Link href="/properties" className="text-sm font-semibold leading-6 text-primary hover:text-gray-600 flex items-center gap-2 transition-colors">
@@ -98,7 +104,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     <div className="lg:col-span-7 xl:col-span-8 space-y-12">
                         {/* Main Image / Gallery */}
                         <PropertyGallery
-                            images={property.images}
+                            images={displayImages}
                             title={`Unidad ${property.unitNumber} - ${typology?.name}`}
                         />
 
@@ -209,5 +215,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </div>
             </div>
         </div>
+        </>
     )
 }

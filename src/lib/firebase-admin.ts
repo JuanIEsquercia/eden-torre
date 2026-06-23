@@ -1,7 +1,7 @@
 import "server-only";
 import { initializeApp, getApps, getApp, cert, type ServiceAccount } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-// import { getAuth } from "firebase-admin/auth"; // Uncomment if needed
+import { getAuth } from "firebase-admin/auth";
 
 // Helper to format private key (handle newlines and quotes)
 const formatPrivateKey = (key: string) => {
@@ -59,6 +59,6 @@ function createFirebaseAdminApp() {
 
 const app = createFirebaseAdminApp();
 const db = getFirestore(app);
-// const auth = getAuth(app); // Uncomment if needed
+const adminAuth = getAuth(app);
 
-export { db };
+export { db, adminAuth };

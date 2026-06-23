@@ -7,6 +7,8 @@ import { CldImage } from 'next-cloudinary'
 import { Typology } from '@/app/admin/typologies/actions'
 import { cn } from '@/lib/utils'
 
+const SOLD_IMAGE_URL = 'https://res.cloudinary.com/diktsavzd/image/upload/v1772111530/properties/igok7navrzqtwx23whx8.png'
+
 interface PropertyCardProps {
     property: Property
     typology?: Typology
@@ -17,7 +19,13 @@ export function PropertyCard({ property, typology }: PropertyCardProps) {
         <div className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-900/5 transition-all hover:shadow-xl hover:ring-gray-900/10">
             {/* Image Section */}
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-                {property.images && property.images.length > 0 ? (
+                {property.status === 'sold' ? (
+                    <img
+                        src={SOLD_IMAGE_URL}
+                        alt={`Unidad ${property.unitNumber} - Vendida`}
+                        className="h-full w-full object-cover"
+                    />
+                ) : property.images && property.images.length > 0 ? (
                     property.images[0].publicId ? (
                         <CldImage
                             src={property.images[0].publicId}

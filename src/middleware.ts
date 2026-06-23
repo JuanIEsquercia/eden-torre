@@ -2,21 +2,28 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-    const adminPath = process.env.ADMIN_PATH || '/admin'
+    const { pathname } = request.nextUrl
 
-    // Only intercept requests to the admin path
-    if (request.nextUrl.pathname.startsWith(adminPath)) {
-        const authCookie = request.cookies.get('admin_session')
+    if (!pathname.startsWith('/admin')) {
+        return NextResponse.next()
+    }
 
-        // If no cookie, redirect to login
-        if (!authCookie?.value) {
-            return NextResponse.redirect(new URL('/login', request.url))
-        }
+    const authCookie = request.cookies.get('eden-auth')
+    if (!authCookie?.value) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    const role = request.cookies.get('eden-role')?.value ?? 'user'
+
+    // Usuarios regulares solo pueden acceder a /admin (dashboard) y /admin/sales
+    const allowedForUser = pathname === '/admin' || pathname.startsWith('/admin/sales')
+    if (role !== 'superadmin' && !allowedForUser) {
+        return NextResponse.redirect(new URL('/admin', request.url))
     }
 
     return NextResponse.next()
 }
 
 export const config = {
-    matcher: ['/admin/:path*'], // Note: We might need to adjust this if ADMIN_PATH is dynamic, but for now strict /admin is fine or we can match all and filter in function.
+    matcher: ['/admin/:path*'],
 }
