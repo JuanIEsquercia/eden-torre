@@ -137,7 +137,7 @@ export async function createSale(formData: FormData): Promise<{ error?: string }
 
         revalidatePath('/admin/sales')
         revalidatePath('/admin/properties')
-        revalidateTag('cuotas')
+        revalidateTag('cuotas', 'everything')
         return {}
     } catch (err) {
         console.error(err)
@@ -157,7 +157,7 @@ export async function deleteSale(ventaId: string, unitId: string): Promise<void>
 
     revalidatePath('/admin/sales')
     revalidatePath('/admin/properties')
-    revalidateTag('cuotas')
+    revalidateTag('cuotas', 'everything')
 }
 
 export async function updateCuotaStatus(
@@ -176,7 +176,7 @@ export async function updateCuotaStatus(
 
     await db.collection('ventas').doc(ventaId).collection('cuotas').doc(cuotaId).update(update)
     revalidatePath(`/admin/sales/${ventaId}`)
-    revalidateTag('cuotas')
+    revalidateTag('cuotas', 'everything')
 }
 
 export async function updateCuotaAmount(
@@ -186,7 +186,7 @@ export async function updateCuotaAmount(
 ): Promise<void> {
     await db.collection('ventas').doc(ventaId).collection('cuotas').doc(cuotaId).update({ amount })
     revalidatePath(`/admin/sales/${ventaId}`)
-    revalidateTag('cuotas')
+    revalidateTag('cuotas', 'everything')
 }
 
 export async function applyPercentageUpdate(
@@ -212,6 +212,6 @@ export async function applyPercentageUpdate(
 
     await batch.commit()
     revalidatePath(`/admin/sales/${ventaId}`)
-    revalidateTag('cuotas')
+    revalidateTag('cuotas', 'everything')
     return {}
 }
