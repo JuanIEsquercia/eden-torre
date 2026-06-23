@@ -1,6 +1,6 @@
 import { getProperties } from './actions'
 import { getTypologies } from '../typologies/actions'
-import { Pencil } from 'lucide-react'
+import { Pencil, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import PropertyForm from './PropertyForm'
 import Link from 'next/link'
@@ -15,15 +15,26 @@ export default async function PropertiesPage(props: {
 
     const editId = searchParams?.edit as string;
     const editingProperty = editId ? properties.find(p => p.id === editId) : null;
+    const isNew = searchParams?.new === 'true';
+    const showModal = isNew || !!editingProperty;
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold tracking-tight text-primary">Propiedades</h1>
+                <Link
+                    href="/admin/properties?new=true"
+                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                    <Plus className="h-4 w-4" />
+                    Nueva propiedad
+                </Link>
             </div>
 
-            {/* Create/Edit Form */}
-            <PropertyForm typologies={typologies} initialData={editingProperty} />
+            {/* Create/Edit Form Modal */}
+            {showModal && (
+                <PropertyForm typologies={typologies} initialData={editingProperty} />
+            )}
 
             {/* List */}
             <div className="rounded-lg border bg-white shadow-sm">

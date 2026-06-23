@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Building2, Home, LogOut, Briefcase, History, Image, Users, Tag, HandCoins } from 'lucide-react'
+import { LayoutDashboard, Building2, Home, LogOut, Briefcase, History, Image, Users, Tag, HandCoins, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { logout } from '@/app/admin/actions'
 
@@ -20,14 +20,33 @@ const navigation = [
     { name: 'Usuarios',         href: '/admin/users',       icon: Users,            roles: ['superadmin'] },
 ]
 
-export function AdminSidebar({ role }: { role: Role }) {
+interface AdminSidebarProps {
+    role: Role
+    isOpen?: boolean
+    onClose?: () => void
+}
+
+export function AdminSidebar({ role, isOpen, onClose }: AdminSidebarProps) {
     const pathname = usePathname()
     const visibleItems = navigation.filter(item => item.roles.includes(role))
 
     return (
-        <div className="flex h-full w-64 flex-col border-r bg-white print:hidden">
+        <div className={cn(
+            'flex h-full w-64 flex-col border-r bg-white print:hidden',
+            // Mobile: fixed overlay drawer; Desktop: static in flex layout
+            'fixed inset-y-0 left-0 z-50 md:static md:z-auto md:translate-x-0',
+            'transition-transform duration-300 ease-in-out md:transition-none',
+            isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        )}>
             <div className="flex h-16 items-center border-b px-6">
                 <span className="text-lg font-bold tracking-tight text-primary">EDEN Admin</span>
+                <button
+                    onClick={onClose}
+                    className="ml-auto rounded-md p-1 text-muted-foreground hover:bg-muted md:hidden"
+                    aria-label="Cerrar menú"
+                >
+                    <X className="h-4 w-4" />
+                </button>
             </div>
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
                 <nav className="mt-1 flex-1 space-y-1 px-2">
@@ -37,6 +56,7 @@ export function AdminSidebar({ role }: { role: Role }) {
                             <Link
                                 key={item.name}
                                 href={item.href}
+                                onClick={onClose}
                                 className={cn(
                                     isActive
                                         ? 'bg-muted text-primary'

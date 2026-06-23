@@ -6,6 +6,7 @@ import CloudinaryUploadWidget from '@/components/admin/CloudinaryUploadWidget';
 import { Typology } from '../typologies/actions';
 import { Plus, Loader2, X, Save, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 interface PropertyFormProps {
     typologies: any[];
@@ -64,29 +65,37 @@ export default function PropertyForm({ typologies, initialData }: PropertyFormPr
             const form = document.querySelector('form') as HTMLFormElement;
             form?.reset();
             setImages([]);
-            if (initialData) {
-                router.push('/admin/properties'); // Clear edit mode
-            }
+            router.push('/admin/properties'); // Close modal by clearing searchParams
         }
         setLoading(false);
     };
 
     return (
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-medium">
-                    {initialData ? 'Editar Propiedad' : 'Nueva Propiedad'}
-                </h2>
-                {initialData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            {/* Backdrop click to close */}
+            <div 
+                className="absolute inset-0 cursor-default" 
+                onClick={() => router.push('/admin/properties')} 
+            />
+
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl border bg-white p-6 shadow-xl z-10"
+            >
+                <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-primary">
+                        {initialData ? 'Editar Propiedad' : 'Nueva Propiedad'}
+                    </h2>
                     <button
+                        type="button"
                         onClick={() => router.push('/admin/properties')}
-                        className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                        className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
                     >
-                        <ArrowLeft className="h-4 w-4" /> Cancelar Edición
+                        <X className="h-5 w-5" />
                     </button>
-                )}
-            </div>
-            <form action={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                </div>
+                <form action={handleSubmit} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {/* Hidden ID input not strictly needed as we append to formData manually, but good for semantics if we used pure server actions */}
                 {initialData && <input type="hidden" name="id" value={initialData.id} />}
 
@@ -162,7 +171,8 @@ export default function PropertyForm({ typologies, initialData }: PropertyFormPr
                         {loading ? 'Guardando...' : (initialData ? 'Guardar Cambios' : 'Agregar Propiedad')}
                     </button>
                 </div>
-            </form>
+                </form>
+            </motion.div>
         </div>
     );
 }
