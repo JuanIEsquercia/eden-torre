@@ -1,6 +1,7 @@
 'use server'
 
-import { adminAuth, db } from '@/lib/firebase-admin'
+import { adminAuth } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
 export async function createUser(prevState: { message: string; error: boolean }, formData: FormData) {
@@ -12,17 +13,21 @@ export async function createUser(prevState: { message: string; error: boolean },
     }
 
     try {
+        // Crea el usuario en Firebase Auth (manejo de auth no cambia)
         const userRecord = await adminAuth.createUser({
             email,
             displayName: name,
             password: crypto.randomUUID(),
         })
 
-        await db.collection('users').doc(userRecord.uid).set({
-            name,
-            email,
-            role: 'user',
-            createdAt: new Date(),
+        // Guarda en PostgreSQL en lugar de Firestore
+        await prisma.user.create({
+            data: {
+                firebaseUid: userRecord.uid,
+                name,
+                email,
+                role: 'user',
+            },
         })
 
         // Envía email para que el usuario configure su contraseña
@@ -37,16 +42,18 @@ export async function createUser(prevState: { message: string; error: boolean },
 
         revalidatePath('/admin/users')
         return { message: `Usuario creado. Se envió un email a ${email} para configurar su contraseña.`, error: false }
-    } catch (err: any) {
-        if (err?.errorInfo?.code === 'auth/email-already-exists') {
+    } catch (err: unknown) {
+        const fbErr = err as { errorInfo?: { code?: string } }
+        if (fbErr?.errorInfo?.code === 'auth/email-already-exists') {
             return { message: 'Ya existe un usuario con ese email.', error: true }
         }
         return { message: 'Error al crear el usuario. Intentá de nuevo.', error: true }
     }
 }
 
+// uid = Firebase UID (lo que tiene el formulario como identificador del usuario)
 export async function deleteUser(uid: string) {
     await adminAuth.deleteUser(uid)
-    await db.collection('users').doc(uid).delete()
+    await prisma.user.deleteMany({ where: { firebaseUid: uid } })
     revalidatePath('/admin/users')
 }

@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum PropertyStatus {
+  available
+  reserved
+  sold
+}
+
+enum Disposition {
+  front
+  back
+  lateral
+}
+
+enum Currency {
+  USD
+  ARS
+}
+
+enum InstallmentStatus {
+  pendiente
+  pagada
+  vencida
+}
+
+enum UserRole {
+  superadmin
+  user
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Typology {
+  id          String   @id @default(uuid()) @db.Uuid
+  firestoreId String?  @unique @map("firestore_id")
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  properties Property[]
+
+  @@map("typologies")
+}
+
+model Property {
+  id          String         @id @default(uuid()) @db.Uuid
+  firestoreId String?        @unique @map("firestore_id")
+  unitNumber  String         @map("unit_number")
+  typologyId  String?        @map("typology_id") @db.Uuid
+  floor       Int
+  status      PropertyStatus @default(available)
+  price       Decimal?       @db.Decimal(12, 2)
+  area        Decimal?       @db.Decimal(8, 2)
+  disposition Disposition?
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime?      @map("updated_at") @db.Timestamptz
+
+  typology Typology?       @relation(fields: [typologyId], references: [id])
+  images   PropertyImage[]
+  sales    Sale[]
+
+  @@map("properties")
+}
+
+// Imágenes separadas del array de Firestore → escalable, filtrable, ordenable
+model PropertyImage {
+  id         String  @id @default(uuid()) @db.Uuid
+  propertyId String  @map("property_id") @db.Uuid
+  url        String
+  publicId   String? @map("public_id") // Cloudinary public ID
+  position   Int     @default(0)
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("property_images")
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  firestoreId String?  @unique @map("firestore_id")
+  firebaseUid String?  @unique @map("firebase_uid") // mantiene compatibilidad con Firebase Auth
+  name        String
+  email       String   @unique
+  role        UserRole @default(user)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  sales Sale[]
+
+  @@map("users")
+}
+
+model Agency {
+  id           String   @id @default(uuid()) @db.Uuid
+  firestoreId  String?  @unique @map("firestore_id")
+  name         String
+  logoUrl      String?  @map("logo_url")
+  logoPublicId String?  @map("logo_public_id")
+  phone        String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  sales Sale[]
+
+  @@map("agencies")
+}
+
+model Brand {
+  id           String   @id @default(uuid()) @db.Uuid
+  firestoreId  String?  @unique @map("firestore_id")
+  name         String
+  logoUrl      String?  @map("logo_url")
+  logoPublicId String?  @map("logo_public_id")
+  website      String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("brands")
+}
+
+// indexType como String libre → evita problemas con caracteres especiales (ej: "Dólar oficial")
+// y permite agregar nuevos tipos sin migración de schema
+model Sale {
+  id                    String    @id @default(uuid()) @db.Uuid
+  firestoreId           String?   @unique @map("firestore_id")
+  propertyId            String    @map("property_id") @db.Uuid
+  agentId               String?   @map("agent_id") @db.Uuid
+  agencyId              String?   @map("agency_id") @db.Uuid
+  buyerName             String    @map("buyer_name")
+  buyerLastName         String    @map("buyer_last_name")
+  buyerDni              String    @map("buyer_dni")
+  buyerPhone            String?   @map("buyer_phone")
+  buyerEmail            String?   @map("buyer_email")
+  closingValue          Decimal   @map("closing_value") @db.Decimal(12, 2)
+  currency              Currency
+  deliveryPercentage    Decimal?  @map("delivery_percentage") @db.Decimal(5, 2)
+  deliveryAmount        Decimal?  @map("delivery_amount") @db.Decimal(12, 2)
+  installmentCount      Int?      @map("installment_count")
+  installmentsBalance   Decimal?  @map("installments_balance") @db.Decimal(12, 2)
+  installmentBaseAmount Decimal?  @map("installment_base_amount") @db.Decimal(12, 2)
+  updatableIndex        Boolean   @default(false) @map("updatable_index")
+  indexType             String?   @map("index_type") // CAC | IPC | UVA | Dólar oficial | Otro
+  boletoDate            DateTime? @map("boleto_date") @db.Date
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  property     Property      @relation(fields: [propertyId], references: [id])
+  agent        User?         @relation(fields: [agentId], references: [id])
+  agency       Agency?       @relation(fields: [agencyId], references: [id])
+  installments Installment[]
+
+  @@map("sales")
+}
+
+model Installment {
+  id                String            @id @default(uuid()) @db.Uuid
+  firestoreId       String?           @unique @map("firestore_id")
+  saleId            String            @map("sale_id") @db.Uuid
+  number            Int
+  dueDate           DateTime          @map("due_date") @db.Date
+  amount            Decimal           @db.Decimal(12, 2)
+  status            InstallmentStatus @default(pendiente)
+  paymentDate       DateTime?         @map("payment_date") @db.Date
+  appliedPercentage Decimal?          @map("applied_percentage") @db.Decimal(6, 4)
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@unique([saleId, number])
+  @@map("installments")
+}
+
+model File {
+  id          String   @id @default(uuid()) @db.Uuid
+  firestoreId String?  @unique @map("firestore_id")
+  name        String
+  url         String
+  type        String?
+  uploadedAt  DateTime @default(now()) @map("uploaded_at") @db.Timestamptz
+
+  @@map("files")
+}
+
+model ProjectUpdate {
+  id          String   @id @default(uuid()) @db.Uuid
+  firestoreId String?  @unique @map("firestore_id")
+  date        DateTime @db.Date
+  title       String
+  description String?
+  videoUrl    String?  @map("video_url")
+  youtubeId   String?  @map("youtube_id")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("project_updates")
+}
+
+// El singleton gallery de Firestore se convierte en filas individuales
+model GalleryImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  url       String
+  caption   String?
+  position  Int      @default(0)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("gallery_images")
+}

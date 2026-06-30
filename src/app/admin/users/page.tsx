@@ -1,22 +1,23 @@
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
 import { CreateUserForm } from './CreateUserForm'
 import { deleteUser } from './actions'
 import { Trash2 } from 'lucide-react'
 
 interface UserRecord {
-    uid: string
+    uid: string  // Firebase UID (usado por deleteUser)
     name: string
     email: string
     createdAt: Date
 }
 
 async function getUsers(): Promise<UserRecord[]> {
-    const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get()
-    return snapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate?.() ?? new Date(),
-    })) as UserRecord[]
+    const rows = await prisma.user.findMany({ orderBy: { createdAt: 'desc' } })
+    return rows.map(r => ({
+        uid: r.firebaseUid ?? '',
+        name: r.name,
+        email: r.email,
+        createdAt: r.createdAt,
+    }))
 }
 
 export default async function UsersPage() {

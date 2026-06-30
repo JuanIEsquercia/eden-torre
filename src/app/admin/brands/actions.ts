@@ -1,6 +1,7 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 export interface Brand {
     id: string
@@ -10,23 +11,18 @@ export interface Brand {
     website?: string
 }
 
-const COLLECTION_NAME = 'brands'
-
 export async function getBrands(): Promise<Brand[]> {
     try {
-        const snapshot = await db.collection(COLLECTION_NAME).get()
-        return snapshot.docs.map(doc => {
-            const data = doc.data()
-            return {
-                id: doc.id,
-                name: data.name,
-                logoUrl: data.logoUrl,
-                logoPublicId: data.logoPublicId,
-                website: data.website
-            }
-        }) as Brand[]
+        const rows = await prisma.brand.findMany({ orderBy: { name: 'asc' } })
+        return rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            logoUrl: r.logoUrl ?? '',
+            logoPublicId: r.logoPublicId ?? undefined,
+            website: r.website ?? undefined,
+        }))
     } catch (error) {
-        console.error("Error fetching brands:", error)
+        console.error('Error fetching brands:', error)
         return []
     }
 }
@@ -38,32 +34,33 @@ export async function createBrand(formData: FormData) {
         const logoPublicId = formData.get('logoPublicId') as string
         const website = formData.get('website') as string
 
-        if (!name || !logoUrl) {
-            throw new Error('Name and Logo are required')
-        }
+        if (!name || !logoUrl) throw new Error('Name and Logo are required')
 
-        const newBrand = {
-            name,
-            logoUrl,
-            logoPublicId,
-            website,
-            createdAt: new Date()
-        }
-
-        await db.collection(COLLECTION_NAME).add(newBrand)
+        await prisma.brand.create({
+            data: {
+                name,
+                logoUrl,
+                logoPublicId: logoPublicId || null,
+                website: website || null,
+            },
+        })
+        revalidatePath('/admin/brands')
+        revalidatePath('/')
         return { success: true }
     } catch (error) {
-        console.error("Error creating brand:", error)
+        console.error('Error creating brand:', error)
         return { success: false, error: 'Failed to create brand' }
     }
 }
 
 export async function deleteBrand(id: string) {
     try {
-        await db.collection(COLLECTION_NAME).doc(id).delete()
+        await prisma.brand.delete({ where: { id } })
+        revalidatePath('/admin/brands')
+        revalidatePath('/')
         return { success: true }
     } catch (error) {
-        console.error("Error deleting brand:", error)
+        console.error('Error deleting brand:', error)
         return { success: false, error: 'Failed to delete brand' }
     }
 }

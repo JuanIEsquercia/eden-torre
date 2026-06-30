@@ -1,6 +1,6 @@
 import 'server-only'
 import { unstable_cache } from 'next/cache'
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
 
 export interface MonthRow {
     key: string        // YYYY-MM
@@ -41,18 +41,19 @@ function monthLabel(key: string): string {
 
 export const getCashFlowData = unstable_cache(
     async (): Promise<CashFlowData> => {
-        const [ventasSnap, cuotasSnap] = await Promise.all([
-            db.collection('ventas').get(),
-            db.collectionGroup('cuotas').get(),
+        const [ventas, cuotas] = await Promise.all([
+            prisma.sale.findMany({ select: { id: true, currency: true, deliveryAmount: true } }),
+            prisma.installment.findMany({
+                select: { saleId: true, dueDate: true, amount: true, status: true },
+            }),
         ])
 
-        // Map ventaId → { currency, deliveryAmount }
+        // Map saleId → { currency, deliveryAmount }
         const ventaMap = new Map<string, { currency: string; deliveryAmount: number }>()
-        ventasSnap.docs.forEach(doc => {
-            const d = doc.data()
-            ventaMap.set(doc.id, {
-                currency: d.currency ?? 'USD',
-                deliveryAmount: d.deliveryAmount ?? 0,
+        ventas.forEach(v => {
+            ventaMap.set(v.id, {
+                currency: v.currency ?? 'USD',
+                deliveryAmount: v.deliveryAmount ? Number(v.deliveryAmount) : 0,
             })
         })
 
@@ -74,41 +75,40 @@ export const getCashFlowData = unstable_cache(
             return byCurrency.get(c)!
         }
 
-        // Add anticipo per currency
-        ventasSnap.docs.forEach(doc => {
-            const { currency, deliveryAmount } = ventaMap.get(doc.id)!
-            ensureCurrency(currency).anticipo += deliveryAmount
+        // Anticipo por currency
+        ventas.forEach(v => {
+            const meta = ventaMap.get(v.id)!
+            ensureCurrency(meta.currency).anticipo += meta.deliveryAmount
         })
 
         const nowKey = new Date().toISOString().substring(0, 7)
 
-        // Process cuotas
-        cuotasSnap.docs.forEach(doc => {
-            const cuota = doc.data()
-            const ventaId = doc.ref.parent.parent!.id
-            const meta = ventaMap.get(ventaId)
+        // Procesar cuotas/installments
+        cuotas.forEach(inst => {
+            const meta = ventaMap.get(inst.saleId)
             if (!meta) return
 
             const { currency } = meta
             const acc = ensureCurrency(currency)
-            const monthKey = (cuota.dueDate as string).substring(0, 7)
+            const monthKey = inst.dueDate.toISOString().substring(0, 7)
+            const amount = inst.amount ? Number(inst.amount) : 0
 
             if (!acc.months.has(monthKey)) {
                 acc.months.set(monthKey, { projected: 0, collected: 0, total: 0, paidCount: 0 })
             }
             const m = acc.months.get(monthKey)!
 
-            m.projected += cuota.amount
+            m.projected += amount
             m.total += 1
             acc.totalCuotas += 1
 
-            if (cuota.status === 'pagada') {
-                m.collected += cuota.amount
+            if (inst.status === 'pagada') {
+                m.collected += amount
                 m.paidCount += 1
                 acc.totalPaid += 1
-            } else if (cuota.status === 'vencida' || (cuota.status === 'pendiente' && monthKey < nowKey)) {
+            } else if (inst.status === 'vencida' || (inst.status === 'pendiente' && monthKey < nowKey)) {
                 acc.overdueCount += 1
-                acc.overdueAmount += cuota.amount
+                acc.overdueAmount += amount
             }
         })
 
@@ -146,7 +146,7 @@ export const getCashFlowData = unstable_cache(
 
         return {
             blocks,
-            ventasCount: ventasSnap.size,
+            ventasCount: ventas.length,
             generatedAt: new Date().toISOString(),
         }
     },

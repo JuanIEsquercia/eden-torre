@@ -1,6 +1,7 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
+import type { Currency as PrismaCurrency, InstallmentStatus } from '@prisma/client'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
 export type Currency = 'USD' | 'ARS'
@@ -24,7 +25,7 @@ export interface Venta {
     buyerDni: string
     buyerPhone: string
     buyerEmail: string
-    unitId: string
+    unitId: string         // UUID de la propiedad (propertyId en DB)
     closingValue: number
     currency: Currency
     deliveryPercentage: number
@@ -38,49 +39,78 @@ export interface Venta {
     createdAt: Date
 }
 
-function generateCuotas(boletoDate: string, count: number, baseAmount: number): Omit<Cuota, 'id'>[] {
+// Tipos derivados del cliente Prisma para garantizar compatibilidad
+type SaleRow = Awaited<ReturnType<typeof prisma.sale.findMany>>[number]
+type InstallmentRow = Awaited<ReturnType<typeof prisma.installment.findMany>>[number]
+
+function mapVenta(row: SaleRow): Venta {
+    return {
+        id: row.id,
+        buyerName: row.buyerName,
+        buyerLastName: row.buyerLastName,
+        buyerDni: row.buyerDni,
+        buyerPhone: row.buyerPhone ?? '',
+        buyerEmail: row.buyerEmail ?? '',
+        unitId: row.propertyId ?? '',
+        closingValue: row.closingValue ? Number(row.closingValue) : 0,
+        currency: (row.currency ?? 'USD') as Currency,
+        deliveryPercentage: row.deliveryPercentage ? Number(row.deliveryPercentage) : 0,
+        deliveryAmount: row.deliveryAmount ? Number(row.deliveryAmount) : 0,
+        installmentCount: row.installmentCount ?? 0,
+        installmentsBalance: row.installmentsBalance ? Number(row.installmentsBalance) : 0,
+        installmentBaseAmount: row.installmentBaseAmount ? Number(row.installmentBaseAmount) : 0,
+        updatableIndex: row.updatableIndex ?? false,
+        indexType: (row.indexType as IndexType | null) ?? undefined,
+        boletoDate: row.boletoDate ? row.boletoDate.toISOString().split('T')[0] : '',
+        createdAt: row.createdAt,
+    }
+}
+
+function mapCuota(row: InstallmentRow): Cuota {
+    return {
+        id: row.id,
+        number: row.number,
+        dueDate: row.dueDate.toISOString().split('T')[0],
+        amount: row.amount ? Number(row.amount) : 0,
+        status: row.status as CuotaStatus,
+        paymentDate: row.paymentDate?.toISOString().split('T')[0] ?? undefined,
+        appliedPercentage: row.appliedPercentage ? Number(row.appliedPercentage) : undefined,
+    }
+}
+
+function generateInstallments(boletoDate: string, count: number, baseAmount: number) {
     const boleto = new Date(boletoDate + 'T12:00:00')
     return Array.from({ length: count }, (_, i) => {
         const due = new Date(boleto.getFullYear(), boleto.getMonth() + i + 1, 1)
         return {
             number: i + 1,
-            dueDate: due.toISOString().split('T')[0],
+            dueDate: due,
             amount: Math.round(baseAmount * 100) / 100,
-            status: 'pendiente' as CuotaStatus,
+            status: 'pendiente' as InstallmentStatus,
         }
     })
 }
 
 export async function getVentas(): Promise<Venta[]> {
-    const snapshot = await db.collection('ventas').orderBy('createdAt', 'desc').get()
-    return snapshot.docs.map(doc => {
-        const d = doc.data()
-        return {
-            id: doc.id,
-            ...d,
-            createdAt: d.createdAt?.toDate?.() ?? new Date(),
-        } as Venta
-    })
+    const rows = await prisma.sale.findMany({ orderBy: { createdAt: 'desc' } })
+    return rows.map(mapVenta)
 }
 
 export async function getVenta(id: string): Promise<Venta | null> {
-    const doc = await db.collection('ventas').doc(id).get()
-    if (!doc.exists) return null
-    const d = doc.data()!
-    return { id: doc.id, ...d, createdAt: d.createdAt?.toDate?.() ?? new Date() } as Venta
+    const row = await prisma.sale.findUnique({ where: { id } })
+    return row ? mapVenta(row) : null
 }
 
 export async function getCuotas(ventaId: string): Promise<Cuota[]> {
-    const snapshot = await db
-        .collection('ventas').doc(ventaId)
-        .collection('cuotas')
-        .orderBy('number')
-        .get()
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Cuota)
+    const rows = await prisma.installment.findMany({
+        where: { saleId: ventaId },
+        orderBy: { number: 'asc' },
+    })
+    return rows.map(mapCuota)
 }
 
 export async function createSale(formData: FormData): Promise<{ error?: string }> {
-    const unitId = formData.get('unitId') as string
+    const unitId = formData.get('unitId') as string  // UUID de la propiedad
     const closingValue = Number(formData.get('closingValue'))
     const deliveryPercentage = Number(formData.get('deliveryPercentage'))
     const installmentCount = Number(formData.get('installmentCount'))
@@ -99,41 +129,36 @@ export async function createSale(formData: FormData): Promise<{ error?: string }
     const updatableIndex = formData.get('updatableIndex') === 'on'
     const rawIndex = formData.get('indexType') as string
 
-    const ventaData: Omit<Venta, 'id'> = {
-        buyerName: formData.get('buyerName') as string,
-        buyerLastName: formData.get('buyerLastName') as string,
-        buyerDni: formData.get('buyerDni') as string,
-        buyerPhone: formData.get('buyerPhone') as string,
-        buyerEmail: formData.get('buyerEmail') as string,
-        unitId,
-        closingValue,
-        currency: formData.get('currency') as Currency,
-        deliveryPercentage,
-        deliveryAmount,
-        installmentCount,
-        installmentsBalance,
-        installmentBaseAmount,
-        updatableIndex,
-        ...(updatableIndex && rawIndex ? { indexType: rawIndex as IndexType } : {}),
-        boletoDate,
-        createdAt: new Date(),
-    }
-
     try {
-        const batch = db.batch()
-        const ventaRef = db.collection('ventas').doc()
-
-        batch.set(ventaRef, ventaData)
-
-        const cuotas = generateCuotas(boletoDate, installmentCount, installmentBaseAmount)
-        cuotas.forEach(cuota => {
-            const ref = ventaRef.collection('cuotas').doc()
-            batch.set(ref, cuota)
-        })
-
-        batch.update(db.collection('properties').doc(unitId), { status: 'sold' })
-
-        await batch.commit()
+        await prisma.$transaction([
+            prisma.sale.create({
+                data: {
+                    buyerName: formData.get('buyerName') as string,
+                    buyerLastName: formData.get('buyerLastName') as string,
+                    buyerDni: formData.get('buyerDni') as string,
+                    buyerPhone: formData.get('buyerPhone') as string,
+                    buyerEmail: formData.get('buyerEmail') as string,
+                    propertyId: unitId,
+                    closingValue,
+                    currency: (formData.get('currency') as string) as PrismaCurrency,
+                    deliveryPercentage,
+                    deliveryAmount,
+                    installmentCount,
+                    installmentsBalance,
+                    installmentBaseAmount,
+                    updatableIndex,
+                    indexType: updatableIndex && rawIndex ? rawIndex : null,
+                    boletoDate: new Date(boletoDate + 'T12:00:00'),
+                    installments: {
+                        create: generateInstallments(boletoDate, installmentCount, installmentBaseAmount),
+                    },
+                },
+            }),
+            prisma.property.update({
+                where: { id: unitId },
+                data: { status: 'sold', updatedAt: new Date() },
+            }),
+        ])
 
         revalidatePath('/admin/sales')
         revalidatePath('/admin/properties')
@@ -146,14 +171,14 @@ export async function createSale(formData: FormData): Promise<{ error?: string }
 }
 
 export async function deleteSale(ventaId: string, unitId: string): Promise<void> {
-    const cuotasSnap = await db.collection('ventas').doc(ventaId).collection('cuotas').get()
-    const batch = db.batch()
-
-    cuotasSnap.docs.forEach(doc => batch.delete(doc.ref))
-    batch.delete(db.collection('ventas').doc(ventaId))
-    batch.update(db.collection('properties').doc(unitId), { status: 'available' })
-
-    await batch.commit()
+    // Las cuotas/installments se borran por CASCADE definido en el schema
+    await prisma.$transaction([
+        prisma.sale.delete({ where: { id: ventaId } }),
+        prisma.property.update({
+            where: { id: unitId },
+            data: { status: 'available', updatedAt: new Date() },
+        }),
+    ])
 
     revalidatePath('/admin/sales')
     revalidatePath('/admin/properties')
@@ -166,15 +191,15 @@ export async function updateCuotaStatus(
     currentStatus: CuotaStatus
 ): Promise<void> {
     const nextStatus: CuotaStatus = currentStatus === 'pagada' ? 'pendiente' : 'pagada'
-    const update: Record<string, unknown> = { status: nextStatus }
 
-    if (nextStatus === 'pagada') {
-        update.paymentDate = new Date().toISOString().split('T')[0]
-    } else {
-        update.paymentDate = null
-    }
+    await prisma.installment.update({
+        where: { id: cuotaId },
+        data: {
+            status: nextStatus as InstallmentStatus,
+            paymentDate: nextStatus === 'pagada' ? new Date() : null,
+        },
+    })
 
-    await db.collection('ventas').doc(ventaId).collection('cuotas').doc(cuotaId).update(update)
     revalidatePath(`/admin/sales/${ventaId}`)
     revalidateTag('cuotas', 'everything')
 }
@@ -184,7 +209,10 @@ export async function updateCuotaAmount(
     cuotaId: string,
     amount: number
 ): Promise<void> {
-    await db.collection('ventas').doc(ventaId).collection('cuotas').doc(cuotaId).update({ amount })
+    await prisma.installment.update({
+        where: { id: cuotaId },
+        data: { amount },
+    })
     revalidatePath(`/admin/sales/${ventaId}`)
     revalidateTag('cuotas', 'everything')
 }
@@ -195,22 +223,23 @@ export async function applyPercentageUpdate(
 ): Promise<{ error?: string }> {
     if (percentage === 0) return { error: 'El porcentaje no puede ser 0.' }
 
-    const snap = await db
-        .collection('ventas').doc(ventaId)
-        .collection('cuotas')
-        .where('status', '==', 'pendiente')
-        .get()
-
-    if (snap.empty) return { error: 'No hay cuotas pendientes para actualizar.' }
-
-    const batch = db.batch()
-    snap.docs.forEach(doc => {
-        const currentAmount = doc.data().amount as number
-        const newAmount = Math.round(currentAmount * (1 + percentage / 100) * 100) / 100
-        batch.update(doc.ref, { amount: newAmount, appliedPercentage: percentage })
+    const pendientes = await prisma.installment.findMany({
+        where: { saleId: ventaId, status: 'pendiente' as InstallmentStatus },
     })
 
-    await batch.commit()
+    if (pendientes.length === 0) return { error: 'No hay cuotas pendientes para actualizar.' }
+
+    await prisma.$transaction(
+        pendientes.map(inst => {
+            const currentAmount = Number(inst.amount)
+            const newAmount = Math.round(currentAmount * (1 + percentage / 100) * 100) / 100
+            return prisma.installment.update({
+                where: { id: inst.id },
+                data: { amount: newAmount, appliedPercentage: percentage },
+            })
+        })
+    )
+
     revalidatePath(`/admin/sales/${ventaId}`)
     revalidateTag('cuotas', 'everything')
     return {}

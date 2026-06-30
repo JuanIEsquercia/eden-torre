@@ -1,10 +1,7 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-
-const COLLECTION = 'project_settings'
-const DOC_ID = 'gallery'
 
 export interface GalleryImage {
     url: string
@@ -13,21 +10,30 @@ export interface GalleryImage {
 
 export async function getGalleryImages(): Promise<GalleryImage[]> {
     try {
-        const doc = await db.collection(COLLECTION).doc(DOC_ID).get()
-        if (!doc.exists) return []
-        return doc.data()?.images || []
+        const rows = await prisma.galleryImage.findMany({ orderBy: { position: 'asc' } })
+        return rows.map(r => ({
+            url: r.url,
+            caption: r.caption ?? undefined,
+        }))
     } catch (error) {
         console.error('Error fetching gallery images:', error)
         return []
     }
 }
 
+// Reemplaza todas las imágenes con el nuevo array (mismo contrato que antes)
 export async function updateGallery(images: GalleryImage[]) {
     try {
-        await db.collection(COLLECTION).doc(DOC_ID).set({
-            images,
-            updatedAt: new Date().toISOString()
-        })
+        await prisma.$transaction([
+            prisma.galleryImage.deleteMany(),
+            prisma.galleryImage.createMany({
+                data: images.map((img, i) => ({
+                    url: img.url,
+                    caption: img.caption ?? null,
+                    position: i,
+                })),
+            }),
+        ])
         revalidatePath('/')
         revalidatePath('/admin/gallery')
         return { success: true }

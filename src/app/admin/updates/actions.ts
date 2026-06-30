@@ -1,32 +1,33 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin'
+import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
 export interface ProjectUpdate {
     id: string
-    date: string // ISO string YYYY-MM-DD
+    date: string       // YYYY-MM-DD
     title: string
-    description: string // Multi-line text or bullet points
-    videoUrl: string // YouTube Link
-    youtubeId?: string // Extracted ID
-    createdAt: number
+    description: string
+    videoUrl: string
+    youtubeId?: string
+    createdAt: number  // timestamp ms — mantenido por compatibilidad con componentes
 }
 
-// Convert Firestore doc to ProjectUpdate
-const mapDoc = (doc: any): ProjectUpdate => ({
-    id: doc.id,
-    ...doc.data()
-})
-
-export async function getUpdates() {
+export async function getUpdates(): Promise<ProjectUpdate[]> {
     try {
-        const snapshot = await db.collection('project_updates')
-            .orderBy('date', 'desc')
-            .limit(10) // Limit to latest 10 for performance
-            .get()
-
-        return snapshot.docs.map(mapDoc)
+        const rows = await prisma.projectUpdate.findMany({
+            orderBy: { date: 'desc' },
+            take: 10,
+        })
+        return rows.map(r => ({
+            id: r.id,
+            date: r.date.toISOString().split('T')[0],
+            title: r.title,
+            description: r.description ?? '',
+            videoUrl: r.videoUrl ?? '',
+            youtubeId: r.youtubeId ?? undefined,
+            createdAt: r.createdAt.getTime(),
+        }))
     } catch (error) {
         console.error('Error fetching updates:', error)
         return []
@@ -36,13 +37,15 @@ export async function getUpdates() {
 export async function createUpdate(data: Omit<ProjectUpdate, 'id' | 'createdAt' | 'youtubeId'>) {
     try {
         const youtubeId = extractYoutubeId(data.videoUrl)
-
-        await db.collection('project_updates').add({
-            ...data,
-            youtubeId,
-            createdAt: Date.now()
+        await prisma.projectUpdate.create({
+            data: {
+                date: new Date(data.date),
+                title: data.title,
+                description: data.description,
+                videoUrl: data.videoUrl,
+                youtubeId,
+            },
         })
-
         revalidatePath('/')
         revalidatePath('/admin/updates')
         return { success: true }
@@ -54,7 +57,7 @@ export async function createUpdate(data: Omit<ProjectUpdate, 'id' | 'createdAt' 
 
 export async function deleteUpdate(id: string) {
     try {
-        await db.collection('project_updates').doc(id).delete()
+        await prisma.projectUpdate.delete({ where: { id } })
         revalidatePath('/')
         revalidatePath('/admin/updates')
         return { success: true }
@@ -63,9 +66,9 @@ export async function deleteUpdate(id: string) {
     }
 }
 
-function extractYoutubeId(url: string) {
+function extractYoutubeId(url: string): string | null {
     if (!url) return null
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
     const match = url.match(regExp)
-    return (match && match[2].length === 11) ? match[2] : null
+    return match && match[2].length === 11 ? match[2] : null
 }
