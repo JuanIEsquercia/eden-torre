@@ -28,10 +28,10 @@ export default function DeletePropertyButton({ id }: { id: string }) {
             <button
                 type="submit"
                 disabled={isPending}
-                className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-lg border border-red-200/50 p-2 text-red-600 bg-white hover:bg-red-50/30 transition-all duration-200 cursor-pointer disabled:opacity-50"
                 title="Eliminar"
             >
-                <Trash2 className="h-5 w-5" />
+                <Trash2 className="h-4 w-4" />
             </button>
         </form>
     )

@@ -109,27 +109,27 @@ export async function getCuotas(ventaId: string): Promise<Cuota[]> {
     return rows.map(mapCuota)
 }
 
-export async function createSale(formData: FormData): Promise<{ error?: string }> {
-    const unitId = formData.get('unitId') as string  // UUID de la propiedad
-    const closingValue = Number(formData.get('closingValue'))
-    const deliveryPercentage = Number(formData.get('deliveryPercentage'))
-    const installmentCount = Number(formData.get('installmentCount'))
-    const boletoDate = formData.get('boletoDate') as string
-
-    if (!unitId || !closingValue || !boletoDate) {
-        return { error: 'Faltan datos obligatorios.' }
-    }
-
-    const deliveryAmount = Math.round(closingValue * deliveryPercentage / 100 * 100) / 100
-    const installmentsBalance = Math.round((closingValue - deliveryAmount) * 100) / 100
-    const installmentBaseAmount = installmentCount > 0
-        ? Math.round(installmentsBalance / installmentCount * 100) / 100
-        : 0
-
-    const updatableIndex = formData.get('updatableIndex') === 'on'
-    const rawIndex = formData.get('indexType') as string
-
+export async function createSale(formData: FormData): Promise<{ error?: string; success?: boolean }> {
     try {
+        const unitId = formData.get('unitId') as string
+        const closingValue = Number(formData.get('closingValue'))
+        const deliveryPercentage = Number(formData.get('deliveryPercentage'))
+        const installmentCount = Number(formData.get('installmentCount'))
+        const boletoDate = formData.get('boletoDate') as string
+
+        if (!unitId || !closingValue || !boletoDate) {
+            return { error: 'Faltan datos obligatorios.' }
+        }
+
+        const deliveryAmount = Math.round(closingValue * deliveryPercentage / 100 * 100) / 100
+        const installmentsBalance = Math.round((closingValue - deliveryAmount) * 100) / 100
+        const installmentBaseAmount = installmentCount > 0
+            ? Math.round(installmentsBalance / installmentCount * 100) / 100
+            : 0
+
+        const updatableIndex = formData.get('updatableIndex') === 'on'
+        const rawIndex = formData.get('indexType') as string
+
         await prisma.$transaction([
             prisma.sale.create({
                 data: {
@@ -162,27 +162,35 @@ export async function createSale(formData: FormData): Promise<{ error?: string }
 
         revalidatePath('/admin/sales')
         revalidatePath('/admin/properties')
+        revalidatePath('/properties')
+        revalidatePath('/')
         revalidateTag('cuotas', 'everything')
-        return {}
+        return { success: true }
     } catch (err) {
-        console.error(err)
+        console.error('[createSale]', err)
         return { error: 'Error al registrar la venta. Intentá de nuevo.' }
     }
 }
 
-export async function deleteSale(ventaId: string, unitId: string): Promise<void> {
-    // Las cuotas/installments se borran por CASCADE definido en el schema
-    await prisma.$transaction([
-        prisma.sale.delete({ where: { id: ventaId } }),
-        prisma.property.update({
-            where: { id: unitId },
-            data: { status: 'available', updatedAt: new Date() },
-        }),
-    ])
-
-    revalidatePath('/admin/sales')
-    revalidatePath('/admin/properties')
-    revalidateTag('cuotas', 'everything')
+export async function deleteSale(ventaId: string, unitId: string): Promise<{ error?: string }> {
+    try {
+        await prisma.$transaction([
+            prisma.sale.delete({ where: { id: ventaId } }),
+            prisma.property.update({
+                where: { id: unitId },
+                data: { status: 'available', updatedAt: new Date() },
+            }),
+        ])
+        revalidatePath('/admin/sales')
+        revalidatePath('/admin/properties')
+        revalidatePath('/properties')
+        revalidatePath('/')
+        revalidateTag('cuotas', 'everything')
+        return {}
+    } catch (err) {
+        console.error('[deleteSale]', err)
+        return { error: 'Error al eliminar la venta. Intentá de nuevo.' }
+    }
 }
 
 export async function updateCuotaStatus(

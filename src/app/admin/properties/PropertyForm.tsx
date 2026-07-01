@@ -47,27 +47,28 @@ export default function PropertyForm({ typologies, initialData }: PropertyFormPr
 
     const handleSubmit = async (formData: FormData) => {
         setLoading(true);
-        // Append images as JSON string
-        formData.append('images', JSON.stringify(images));
-
-        let result;
-        if (initialData) {
-            formData.append('id', initialData.id);
-            result = await updateProperty(formData);
-        } else {
-            result = await createProperty(formData);
+        try {
+            formData.append('images', JSON.stringify(images));
+            let result;
+            if (initialData) {
+                formData.append('id', initialData.id);
+                result = await updateProperty(formData);
+            } else {
+                result = await createProperty(formData);
+            }
+            if (result?.error) {
+                alert(result.error);
+            } else {
+                const form = document.querySelector('form') as HTMLFormElement;
+                form?.reset();
+                setImages([]);
+                router.push('/admin/properties');
+            }
+        } catch {
+            alert('Error de conexión. Intentá de nuevo.');
+        } finally {
+            setLoading(false);
         }
-
-        if (result?.error) {
-            alert(result.error);
-        } else {
-            // Reset form
-            const form = document.querySelector('form') as HTMLFormElement;
-            form?.reset();
-            setImages([]);
-            router.push('/admin/properties'); // Close modal by clearing searchParams
-        }
-        setLoading(false);
     };
 
     return (

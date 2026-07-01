@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { getVentas, deleteSale } from './actions'
+import { getVentas } from './actions'
 import { getProperties } from '../properties/actions'
-import { Plus, Trash2, FileText } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Plus, FileText } from 'lucide-react'
+import DeleteSaleButton from './DeleteSaleButton'
 
 function formatCurrency(amount: number, currency: string) {
     return `${currency === 'USD' ? 'U$D' : '$'} ${amount.toLocaleString('es-AR')}`
@@ -14,93 +14,140 @@ export default async function SalesPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Ventas</h1>
-                    <p className="text-sm text-muted-foreground">{ventas.length} operación{ventas.length !== 1 ? 'es' : ''} registrada{ventas.length !== 1 ? 's' : ''}</p>
+                    <h1 className="text-3xl font-extrabold tracking-tight text-primary">Ventas</h1>
+                    <p className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wider">
+                        {ventas.length} operación{ventas.length !== 1 ? 'es' : ''} registrada{ventas.length !== 1 ? 's' : ''}
+                    </p>
                 </div>
                 <Link
                     href="/admin/sales/new"
-                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:bg-primary/95 transition-all shadow-sm border border-white/5 active:scale-95 hover:shadow-gold-hover duration-250 cursor-pointer"
                 >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-3.5 w-3.5" />
                     Nueva venta
                 </Link>
             </div>
 
-            <div className="rounded-lg border bg-white shadow-sm">
+            <div className="rounded-2xl border border-slate-200/70 bg-white shadow-premium overflow-hidden">
                 {ventas.length === 0 ? (
-                    <div className="px-6 py-16 text-center text-sm text-muted-foreground">
+                    <div className="px-6 py-16 text-center text-sm text-slate-400 font-medium">
                         No hay ventas registradas todavía.
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                    <th className="px-6 py-3">Comprador</th>
-                                    <th className="px-6 py-3">Unidad</th>
-                                    <th className="px-6 py-3">Valor</th>
-                                    <th className="px-6 py-3">Cuotas</th>
-                                    <th className="px-6 py-3">Boleto</th>
-                                    <th className="px-6 py-3 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {ventas.map(venta => {
-                                    const property = propertiesMap.get(venta.unitId)
-                                    const unitLabel = property
-                                        ? `${property.floor}° ${property.unitNumber}`
-                                        : venta.unitId
-                                    return (
-                                        <tr key={venta.id} className="hover:bg-gray-50/50">
-                                            <td className="px-6 py-4">
-                                                <p className="font-medium text-gray-900">
+                    <>
+                        {/* Mobile: cards */}
+                        <div className="sm:hidden divide-y divide-slate-100">
+                            {ventas.map(venta => {
+                                const property = propertiesMap.get(venta.unitId)
+                                const unitLabel = property
+                                    ? `${property.floor}° ${property.unitNumber}`
+                                    : venta.unitId
+                                return (
+                                    <div key={venta.id} className="px-4 py-4 space-y-3">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-slate-900 text-sm truncate">
                                                     {venta.buyerName} {venta.buyerLastName}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground">{venta.buyerEmail}</p>
-                                            </td>
-                                            <td className="px-6 py-4 font-medium">{unitLabel}</td>
-                                            <td className="px-6 py-4">
-                                                {formatCurrency(venta.closingValue, venta.currency)}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={cn(
-                                                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                                                    'bg-blue-100 text-blue-800'
-                                                )}>
-                                                    {venta.installmentCount} cuotas
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-muted-foreground">
-                                                {new Date(venta.boletoDate + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Link
-                                                        href={`/admin/sales/${venta.id}`}
-                                                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50"
-                                                    >
-                                                        <FileText className="h-3.5 w-3.5" />
-                                                        Ver
-                                                    </Link>
-                                                    <form action={deleteSale.bind(null, venta.id, venta.unitId)}>
-                                                        <button
-                                                            type="submit"
-                                                            className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                                                <p className="text-xs text-slate-400 font-medium mt-0.5 truncate">{venta.buyerEmail}</p>
+                                            </div>
+                                            <span className="shrink-0 rounded-lg bg-slate-100 border border-slate-200/60 px-2 py-0.5 text-[11px] font-bold text-slate-700">
+                                                {unitLabel}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-end justify-between gap-3">
+                                            <div>
+                                                <p className="font-bold text-slate-900 text-sm">
+                                                    {formatCurrency(venta.closingValue, venta.currency)}
+                                                </p>
+                                                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                                                    {venta.installmentCount} cuotas · {new Date(venta.boletoDate + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <Link
+                                                    href={`/admin/sales/${venta.id}`}
+                                                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-250/70 px-2.5 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition-all duration-200"
+                                                >
+                                                    <FileText className="h-3.5 w-3.5 text-slate-500" />
+                                                    Ver
+                                                </Link>
+                                                <DeleteSaleButton
+                                                    ventaId={venta.id}
+                                                    unitId={venta.unitId}
+                                                    buyerName={`${venta.buyerName} ${venta.buyerLastName}`}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        {/* Desktop: table */}
+                        <div className="hidden sm:block overflow-x-auto">
+                            <table className="w-full text-sm text-slate-500">
+                                <thead>
+                                    <tr className="bg-slate-50/75 border-b border-slate-100 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th className="px-6 py-4">Comprador</th>
+                                        <th className="px-6 py-4">Unidad</th>
+                                        <th className="px-6 py-4">Valor</th>
+                                        <th className="px-6 py-4">Cuotas</th>
+                                        <th className="px-6 py-4">Boleto</th>
+                                        <th className="px-6 py-4 text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-150">
+                                    {ventas.map(venta => {
+                                        const property = propertiesMap.get(venta.unitId)
+                                        const unitLabel = property
+                                            ? `${property.floor}° ${property.unitNumber}`
+                                            : venta.unitId
+                                        return (
+                                            <tr key={venta.id} className="hover:bg-slate-50/45 transition-colors duration-150">
+                                                <td className="px-6 py-4">
+                                                    <p className="font-bold text-slate-900 text-sm">
+                                                        {venta.buyerName} {venta.buyerLastName}
+                                                    </p>
+                                                    <p className="text-xs text-slate-400 font-medium mt-0.5">{venta.buyerEmail}</p>
+                                                </td>
+                                                <td className="px-6 py-4 font-semibold text-slate-800">{unitLabel}</td>
+                                                <td className="px-6 py-4 font-bold text-slate-900">
+                                                    {formatCurrency(venta.closingValue, venta.currency)}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-200/60 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+                                                        {venta.installmentCount} cuotas
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-500 font-medium">
+                                                    {new Date(venta.boletoDate + 'T12:00:00').toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Link
+                                                            href={`/admin/sales/${venta.id}`}
+                                                            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-250/70 px-2.5 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition-all duration-200"
                                                         >
-                                                            <Trash2 className="h-3.5 w-3.5" />
-                                                            Eliminar
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                                            <FileText className="h-3.5 w-3.5 text-slate-500" />
+                                                            Ver
+                                                        </Link>
+                                                        <DeleteSaleButton
+                                                            ventaId={venta.id}
+                                                            unitId={venta.unitId}
+                                                            buyerName={`${venta.buyerName} ${venta.buyerLastName}`}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

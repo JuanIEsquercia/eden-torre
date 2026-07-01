@@ -14,9 +14,9 @@ const STATUS_LABELS: Record<CuotaStatus, string> = {
 }
 
 const STATUS_STYLES: Record<CuotaStatus, string> = {
-    pendiente: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-    pagada: 'bg-green-100 text-green-800 hover:bg-green-200',
-    vencida: 'bg-red-100 text-red-800 hover:bg-red-200',
+    pendiente: 'bg-amber-50 text-amber-700 border border-amber-250/70 hover:bg-amber-100/50',
+    pagada: 'bg-emerald-50 text-emerald-700 border border-emerald-250/70 hover:bg-emerald-100/50',
+    vencida: 'bg-red-50 text-red-750 border border-red-200 hover:bg-red-100/50',
 }
 
 function formatDate(dateStr: string) {
@@ -73,23 +73,23 @@ export default function CuotasTable({ ventaId, cuotas, currency }: Props) {
     const currencySymbol = currency === 'USD' ? 'U$D' : '$'
 
     return (
-        <div className="overflow-x-auto rounded-lg border bg-white shadow-sm">
-            <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-premium">
+            <table className="w-full text-sm text-slate-500">
                 <thead>
-                    <tr className="border-b bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        <th className="px-4 py-3 text-center">N°</th>
-                        <th className="px-4 py-3">Vencimiento</th>
-                        <th className="px-4 py-3">Monto</th>
-                        <th className="px-4 py-3 text-center">% Aplicado</th>
-                        <th className="px-4 py-3 text-center">Estado</th>
-                        <th className="px-4 py-3">Fecha de pago</th>
+                    <tr className="bg-slate-50/75 border-b border-slate-100 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        <th className="px-4 py-4 text-center">N°</th>
+                        <th className="px-4 py-4">Vencimiento</th>
+                        <th className="px-4 py-4">Monto</th>
+                        <th className="hidden sm:table-cell px-4 py-4 text-center">% Aplicado</th>
+                        <th className="px-4 py-4 text-center">Estado</th>
+                        <th className="hidden sm:table-cell px-4 py-4">Fecha de pago</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-slate-100">
                     {cuotas.map(cuota => (
                         <tr key={cuota.id} className={cn(
-                            'hover:bg-gray-50/50',
-                            cuota.status === 'pagada' && 'bg-green-50/30',
+                            'hover:bg-slate-50/45 transition-colors duration-150',
+                            cuota.status === 'pagada' && 'bg-emerald-50/15',
                         )}>
                             <td className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">
                                 {cuota.number}
@@ -106,7 +106,7 @@ export default function CuotasTable({ ventaId, cuotas, currency }: Props) {
                                             step="0.01"
                                             value={editAmount}
                                             onChange={e => setEditAmount(e.target.value)}
-                                            className="h-8 w-28 rounded border border-input px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                            className="h-8 w-24 rounded border border-input px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                             autoFocus
                                         />
                                         <button
@@ -131,7 +131,7 @@ export default function CuotasTable({ ventaId, cuotas, currency }: Props) {
                                         {cuota.status !== 'pagada' && (
                                             <button
                                                 onClick={() => startEdit(cuota)}
-                                                className="invisible rounded p-0.5 text-muted-foreground hover:text-primary group-hover:visible"
+                                                className="rounded p-0.5 text-muted-foreground hover:text-primary sm:invisible sm:group-hover:visible"
                                             >
                                                 <Pencil className="h-3.5 w-3.5" />
                                             </button>
@@ -139,7 +139,7 @@ export default function CuotasTable({ ventaId, cuotas, currency }: Props) {
                                     </div>
                                 )}
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="hidden sm:table-cell px-4 py-3 text-center">
                                 {cuota.appliedPercentage != null ? (
                                     <span className="text-xs font-medium text-accent">+{cuota.appliedPercentage}%</span>
                                 ) : (
@@ -159,7 +159,7 @@ export default function CuotasTable({ ventaId, cuotas, currency }: Props) {
                                     {STATUS_LABELS[cuota.status]}
                                 </button>
                             </td>
-                            <td className="px-4 py-3 text-xs text-muted-foreground">
+                            <td className="hidden sm:table-cell px-4 py-3 text-xs text-muted-foreground">
                                 {cuota.paymentDate ? formatDate(cuota.paymentDate) : '—'}
                             </td>
                         </tr>

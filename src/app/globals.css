@@ -2,38 +2,37 @@
 
 :root {
   /* Base */
-  --background: #ffffff;
-  --foreground: #0f172a;
-  /* Slate 900 */
+  --background: #fdfdfd;
+  --foreground: #090d16;
 
-  /* Brand Colors - Sophisticated Real Estate Theme */
-  --primary: #0f172a;
-  /* Slate 900 - Trust, Authority */
+  /* Brand Colors - Luxury Real Estate Theme */
+  --primary: #0b0f19;
+  /* Ultra Dark Navy/Slate - Authority, Luxury */
   --primary-foreground: #f8fafc;
 
-  --secondary: #64748b;
-  /* Slate 500 - Subtlety, Modern */
+  --secondary: #475569;
+  /* Slate 600 - Subtlety, Modern */
   --secondary-foreground: #ffffff;
 
-  --accent: #ca8a04;
-  /* Yellow 600 (Gold-ish) - Premium, Attention */
+  --accent: #b8986c;
+  /* Rich Gold / Champagne - Premium Accent */
   --accent-foreground: #ffffff;
 
-  --muted: #f1f5f9;
-  /* Slate 100 */
+  --muted: #f4f6fa;
+  /* Light Cool Grey */
   --muted-foreground: #64748b;
 
   --border: #e2e8f0;
   /* Slate 200 */
   --input: #e2e8f0;
-  --ring: #0f172a;
+  --ring: #b8986c;
 
   /* Status */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
   /* Radius */
-  --radius: 0.5rem;
+  --radius: 0.75rem; /* Larger, smoother rounded corners */
 }
 
 @theme inline {
@@ -96,4 +95,82 @@ body {
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes pulse-ring-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-ring-red {
+  animation: pulse-ring-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Premium custom UI styles */
+.shadow-premium {
+  box-shadow: 0 4px 20px -2px rgba(11, 15, 25, 0.03), 0 2px 8px -1px rgba(11, 15, 25, 0.02);
+}
+
+.shadow-gold-hover:hover {
+  box-shadow: 0 10px 30px -10px rgba(184, 152, 108, 0.18), 0 1px 3px -1px rgba(184, 152, 108, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark-sidebar {
+  background: linear-gradient(180deg, #0b0f19 0%, #050810 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Refined custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(184, 152, 108, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(184, 152, 108, 0.4);
 }

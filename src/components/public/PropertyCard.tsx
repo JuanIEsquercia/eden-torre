@@ -6,8 +6,7 @@ import { Property } from '@/app/admin/properties/actions'
 import { CldImage } from 'next-cloudinary'
 import { Typology } from '@/app/admin/typologies/actions'
 import { cn } from '@/lib/utils'
-
-const SOLD_IMAGE_URL = 'https://res.cloudinary.com/diktsavzd/image/upload/v1772111530/properties/igok7navrzqtwx23whx8.png'
+import { SOLD_IMAGE_URL } from '@/lib/constants'
 
 interface PropertyCardProps {
     property: Property

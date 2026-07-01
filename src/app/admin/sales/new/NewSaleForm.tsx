@@ -21,6 +21,7 @@ export default function NewSaleForm({ availableUnits, typologies }: Props) {
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState('')
+    const [success, setSuccess] = useState(false)
     const [isUpdatable, setIsUpdatable] = useState(false)
     const [currency, setCurrency] = useState<'USD' | 'ARS'>('USD')
     const [closingValue, setClosingValue] = useState(0)
@@ -37,12 +38,17 @@ export default function NewSaleForm({ availableUnits, typologies }: Props) {
         e.preventDefault()
         setIsPending(true)
         setError('')
-        const formData = new FormData(e.currentTarget)
-        const result = await createSale(formData)
-        if (result?.error) {
-            setError(result.error)
-            setIsPending(false)
-        } else {
+        try {
+            const formData = new FormData(e.currentTarget)
+            const result = await createSale(formData)
+            if (result?.error) {
+                setError(result.error)
+                setIsPending(false)
+            } else if (result?.success) {
+                setSuccess(true)
+                setTimeout(() => router.push('/admin/sales'), 2000)
+            }
+        } catch {
             router.push('/admin/sales')
         }
     }
@@ -203,12 +209,17 @@ export default function NewSaleForm({ availableUnits, typologies }: Props) {
                 </div>
             )}
 
+            {success && (
+                <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+                    Venta registrada exitosamente. Redirigiendo a la lista de ventas...
+                </div>
+            )}
             {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="flex gap-3">
                 <button
                     type="submit"
-                    disabled={isPending || availableUnits.length === 0}
+                    disabled={isPending || success || availableUnits.length === 0}
                     className="inline-flex h-10 items-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
                 >
                     {isPending ? 'Registrando...' : 'Registrar venta'}

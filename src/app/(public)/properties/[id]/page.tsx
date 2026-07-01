@@ -10,6 +10,7 @@ import { PropertyGallery } from '@/components/public/PropertyGallery'
 import InvestmentCalculator from '@/components/public/InvestmentCalculator'
 import { FinancingSidebarCard } from '@/components/public/FinancingSidebarCard'
 import { buildApartmentSchema } from '@/lib/schema'
+import { SOLD_IMAGE_URL } from '@/lib/constants'
 
 export const revalidate = 10800 // 3 hours
 
@@ -74,7 +75,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
     const typology = typologies.find(t => t.id === property.typologyId)
 
-    const SOLD_IMAGE_URL = 'https://res.cloudinary.com/diktsavzd/image/upload/v1772111530/properties/igok7navrzqtwx23whx8.png'
     const displayImages = property.status === 'sold'
         ? [{ url: SOLD_IMAGE_URL, publicId: '' }]
         : property.images ?? []

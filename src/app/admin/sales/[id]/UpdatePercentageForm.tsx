@@ -34,7 +34,7 @@ export default function UpdatePercentageForm({ ventaId }: { ventaId: string }) {
                 <TrendingUp className="h-4 w-4 text-accent" />
                 <h3 className="text-sm font-semibold">Actualizar cuotas pendientes</h3>
             </div>
-            <form onSubmit={handleSubmit} className="flex items-end gap-3">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row sm:items-end gap-3">
                 <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">
                         Porcentaje de actualización
@@ -46,7 +46,7 @@ export default function UpdatePercentageForm({ ventaId }: { ventaId: string }) {
                             placeholder="ej. 3.5"
                             value={percentage}
                             onChange={e => setPercentage(e.target.value)}
-                            className="flex h-10 w-36 rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="flex h-10 w-full sm:w-36 rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>
                     </div>
@@ -54,7 +54,7 @@ export default function UpdatePercentageForm({ ventaId }: { ventaId: string }) {
                 <button
                     type="submit"
                     disabled={isPending || !percentage}
-                    className="inline-flex h-10 items-center rounded-md bg-accent px-4 text-sm font-medium text-white hover:bg-accent/90 disabled:pointer-events-none disabled:opacity-50"
+                    className="inline-flex h-10 w-full sm:w-auto items-center justify-center rounded-md bg-accent px-4 text-sm font-medium text-white hover:bg-accent/90 disabled:pointer-events-none disabled:opacity-50"
                 >
                     {isPending ? 'Aplicando...' : 'Aplicar'}
                 </button>
